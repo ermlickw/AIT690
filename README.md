@@ -30,7 +30,7 @@ COCO, WHY PRETTY SURE?     <br>
 Sure<br>
     'I want to share my favorites'<br>
 COCO, WHY DO YOU WANT TO SHARE YOUR FAVORITES?    <br>
-    'favorite is an interesting topic'<br>
+    'You should know my favorite things'<br>
 SPEAKING OF FAVORITES... I'D LIKE TO LEARN MORE ABOUT YOU<br>
 I know your favorite song is ...well maybe I am not sure....<br>
 ...What is your favorite song?  <br>
