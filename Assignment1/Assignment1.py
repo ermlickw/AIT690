@@ -29,20 +29,31 @@ Program can be ended by using any of these keywords
 ************************************************************************************
 SIMPLE EXAMPLE DIALOGUE:
 ************************************************************************************
+Simple Example Dialogue:
 HELLO, MY NAME IS ELIZA. I AM A PSYCHOTHERAPIST. WHAT IS YOUR NAME?
     'My name is Coco'
-NICE TO MEET YOU, COCO. HOW DO YOU FEEL TODAY?
+NICE TO MEET YOU, COCO. HOW DO YOU FEEL TODAY? 
+    'i fee l sAD...'    
+"I DIDN'T QUITE UNDERSTAND. CAN YOU SAY THAT ANOTHER WAY?"
     'I feel sad'
-WHAT MADE YOU SAD?
+TELL ME MORE.
     'I always have lot of work to do'
 CAN YOU THINK OF A SPECIFIC EXAMPLE?
     'Yes, I need to read 10 paper a week'
-AND WHY DO YOU THINK THAT IS?
-   'I do not know, can you sing a song for me?'
-YOU DO NOT KNOWN, CAN I HELP YOU DO THAT?
-    'can you help me?'
+ARE YOU SURE?
+    'Pretty sure'
+COCO, WHY PRETTY SURE?     
+    'can you sing a song for me?'
 Sure
-    'Great! bye"
+    'I want to share my favorites'
+COCO, WHY DO YOU WANT TO SHARE YOUR FAVORITES?    
+    'favorite is an interesting topic'
+SPEAKING OF FAVORITES... I'D LIKE TO LEARN MORE ABOUT YOU
+I know your favorite song is ...well maybe I am not sure....
+...What is your favorite song?  
+    'My favorite song is Raise you up'   
+GOT IT. WHAT ELSE IS ON YOUR MIND?     
+    'Nothing! bye"
 I HOPE THIS CONVERSATION WAS PRODUCTIVE. GOODBYE.
 ***************************************************************************************
 
