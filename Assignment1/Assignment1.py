@@ -57,7 +57,7 @@ GOT IT. WHAT ELSE IS ON YOUR MIND?
 I HOPE THIS CONVERSATION WAS PRODUCTIVE. GOODBYE.
 ***************************************************************************************
 
-The detailed information of each function is stated within each portion.
+More detailed information is stated below.
 '''
 
 import re
@@ -171,6 +171,11 @@ def determine_reply(userInput, userName):
                      "I didn't quite understand, can you say that another way? \n",]
 
     def transform(Input):
+        '''
+        This function is used to convert the user's sentence into a question if
+        no particular words are identified by the if statements below. This is
+        done to provide a robust reply for non-preprogramed inputs.
+        '''
 		#Replace "i" with "you"
         output = re.sub(r'\bi\b',r'-1-',Input)
 
@@ -222,13 +227,15 @@ def determine_reply(userInput, userName):
 
         return output
 
-    #Check if the sentence has any gibberish word
+    #Check if the sentence has any gibberish word / typos
     gibberishWord = checkgibberish_words(userInput)
     if gibberishWord:
         output = "I didn't quite understand. Can you say that another way?"
         return output.upper() + '\n', True
 
     #If block to search for inputs starting with "how"
+    #Done to answer the user if they ask a how type question.
+    #This is done for other similar words as shown below.
     if re.search(r"^(how) (.*)",userInput):
         #Reply is selected from this list
         howRepliesList = ['What do you think?', 'Why do you ask?',]
@@ -286,14 +293,17 @@ def determine_reply(userInput, userName):
         return "Hello again. What's on your mind?".upper() + '\n', True
 
     #If block to search for inputs having "all" in the sentence
+    #this is to reply to instances where the user generallizes something
     if re.search(r".* all .*",userInput):
         return "In what way?".upper() + '\n', True
 
     #If block to search for inputs having "always" in the sentence
+    # this is done to reply to instances where the user generalizes something
     if re.search(r".* always .*",userInput):
         return "Can you think of a specific example?".upper()+ '\n', True
 
     #If block to search for inputs having the keyword "depressed/sad/upset" and sending reply based on it
+    #this is doneto reply to the user when they express specific feelings
     if re.search(r"\b(depressed|sad|upset|unhappy|angry|positive|optimistic|fearful|happy)\b",userInput):
         output = re.sub(r".*\b(depressed|sad|upset|unhappy|angry|positive|optimistic|fearful|happy)\b.*",
                r"What made you \1? \n",userInput)
@@ -342,7 +352,8 @@ def determine_reply(userInput, userName):
     if re.search(r"\b(bye|farewell|adios|see you later| talk to you later)\b",userInput):
         return "\n", False
 
-    # if there is no match ask them the question:
+    # if there is no match ask them a question form of their own input. This is
+    #Done to provide a robust reply to various inputs.
     else:
 
        transformed_text = transform(userInput).upper()
@@ -377,7 +388,7 @@ def determine_reply(userInput, userName):
             output =  defaultreply
 
        return output.upper() + '? \n', True
-    # return random.choice(repetitionList), True
+
 
 
 def main():
@@ -388,7 +399,6 @@ def main():
     #Variable Initialization
     converse = True
     userName = ""
-    # misundestandingCounter=0
 
 	#Eliza will introduce from one of the replies from this introduction list
     introductionList =['What is on your mind today? \n', 'How do you feel today? \n',]
