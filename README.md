@@ -5,9 +5,9 @@
 This code aims to implement a dialogue robot Eliza who can engage in a dialogue with the user.
 Eliza will begin the dialogue by asking the name of the user. Current implementation of Eliza contains:
 1)	"Word Spotting" function to extract the keywords from users' answer and give related feedback. (e.g. 'sad' to 'What makes you sad?')
-2)	 Transforming Sentences from user to the answers/questions from Eliza.(e.g., " I am not sure waht to do." to "You are not sure waht to do?")
+2)	 Transforming Sentences from user to the answers/questions from Eliza.(e.g., " I am not sure what to do." to "You are not sure what to do?")
 3)	Personalized the conversation by using user name in some of the questions
-4)	Robust answers in some plausible way when the users enters some gibberish sentence or the sentences are not understandable (e.g.I'm sorry I didn't catch that. What is your name again?
+4)	Robust answers in some plausible way when the users enters some gibberish sentence or the sentences are not understandable (e.g., I'm sorry I didn't catch that. What is your name again?
 5)	Used lambda function for asking default questions to the user, such as storing and returning the user's favorite things throughout discourse.
 HOW TO RUN THE PROGRAM:
 When using the code, just run the Assignment1.py and type your response into the prompt and press ENTER. Do not use contractions.
