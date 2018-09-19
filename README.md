@@ -13,19 +13,29 @@ HOW TO RUN THE PROGRAM:
 When using the code, just run the Assignment1.py and type your response into the prompt and press ENTER. Do not use contractions.
 ***********************************************************************************
 Simple Example Dialogue: <br>
-HELLO, MY NAME IS ELIZA. I AM A PSYCHOTHERAPIST. WHAT IS YOUR NAME? <br>
+HELLO, MY NAME IS ELIZA. I AM A PSYCHOTHERAPIST. WHAT IS YOUR NAME?<br>
     'My name is Coco'<br>
 NICE TO MEET YOU, COCO. HOW DO YOU FEEL TODAY? <br>
+    'i fee l sAD...'    <br>
+"I DIDN'T QUITE UNDERSTAND. CAN YOU SAY THAT ANOTHER WAY?"<br>
     'I feel sad'<br>
-WHAT MADE YOU SAD? <br>
+TELL ME MORE.<br>
     'I always have lot of work to do'<br>
-CAN YOU THINK OF A SPECIFIC EXAMPLE? <br>
+CAN YOU THINK OF A SPECIFIC EXAMPLE?<br>
     'Yes, I need to read 10 paper a week'<br>
-AND WHY DO YOU THINK THAT IS? 	<br>
-   'I do not know, can you sing a song for me?'<br>
-YOU DO NOT KNOW, CAN I HELP YOU DO THAT? <br>
-    'can you help me?'<br>
-Sure <br>
-    'Great! bye"<br>
-I HOPE THIS CONVERSATION WAS PRODUCTIVE. GOODBYE. <br>
-
+ARE YOU SURE?<br>
+    'Pretty sure'<br>
+COCO, WHY PRETTY SURE?     <br>
+    'can you sing a song for me?'<br>
+Sure<br>
+    'I want to share my favorites'<br>
+COCO, WHY DO YOU WANT TO SHARE YOUR FAVORITES?    <br>
+    'favorite is an interesting topic'<br>
+SPEAKING OF FAVORITES... I'D LIKE TO LEARN MORE ABOUT YOU<br>
+I know your favorite song is ...well maybe I am not sure....<br>
+...What is your favorite song?  <br>
+    'My favorite song is Raise you up'   <br>
+GOT IT. WHAT ELSE IS ON YOUR MIND?     <br>
+    'Nothing! bye"<br>
+I HOPE THIS CONVERSATION WAS PRODUCTIVE. GOODBYE.<br>
+***************************************************************************************<br>
