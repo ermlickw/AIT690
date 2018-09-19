@@ -9,7 +9,7 @@ Eliza will begin the dialogue by asking the name of the user. Current implementa
 3)	Personalized the conversation by using user name in some of the questions
 4)	Robust answers in some plausible way when the users enters some gibberish sentence or the sentences are not understandable (e.g., I'm sorry I didn't catch that. What is your name again?)
 5)	Used lambda function for asking default questions to the user, such as storing and returning the user's favorite things throughout discourse. <br>
-HOW TO RUN THE PROGRAM:<br>
+HOW TO RUN THE PROGRAM:<br><br>
 When using the code, just run the Assignment1.py and type your response into the prompt and press ENTER. Do not use contractions.<br>
 ***********************************************************************************
 Simple Example Dialogue: <br>
