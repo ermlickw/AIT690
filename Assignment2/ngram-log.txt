@@ -1,0 +1,3 @@
+3.197479009628296 secs python ngram.py 3 5 austen-emma.txt austen-persuasion.txt carroll-alice.txt
+4.9931347370147705 secs python ngram.py 4 10 austen-emma.txt austen-persuasion.txt carroll-alice.txt
+2.3509786128997803 secs python ngram.py 3 10 milton-paradise.txt shakespeare-macbeth.txt shakespeare-hamlet.txt 
