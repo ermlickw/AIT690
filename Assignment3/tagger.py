@@ -76,16 +76,16 @@ def main():
 
     #total counts of tags
     traintag_fd = nltk.FreqDist(tag for (word,tag) in trainText)
-    # # traintag_fd.plot(cumulative=False) fun visualization not needed
+        # traintag_fd.plot(cumulative=False) fun visualization not needed
 
     #create conditional table of [word] [POS] frequencies
     train_confd_WT = nltk.ConditionalFreqDist((w.lower(), t) for w, t in trainText)
-    # print(train_confd_WT['set']['VBD'])
+        # print(train_confd_WT['set']['VBD'])
 
     #create conditional table of POS following POS-1
     word_tag_pairs = nltk.bigrams(trainText)
     train_confd_Tt = nltk.ConditionalFreqDist((a[1], b[1]) for (a,b) in word_tag_pairs)
-    # print(train_confd_Tt["NN"]["NN"])
+        # print(train_confd_Tt["NN"]["NN"])
 
     #read test file
     testText = open(sys.argv[2]).read()
