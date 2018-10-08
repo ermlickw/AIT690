@@ -41,7 +41,6 @@ tag and ignore the rest.
 You may use code as found in the official Python documentation, Learning Python, or Programming
 Python as a part of your assignments, however, this must be documented in your source code. You may
 also use NTLK.
-
  copy of your program source code (tagger.py and scorer.py) along with a copy of
 a script file called tagger-log.txt that you should create as follows:
 $ script tagger-log.txt
@@ -49,7 +48,6 @@ $ time python tagger.py pos-train.txt pos-test.txt > pos-test-with-tags.txt
 $ head -100 pos-test-with-tags.txt
 $ python scorer.py pos-test-with-tags.txt pos-test-key.txt > pos-taggingreport.txt
 $ cat pos-tagging-rep
-
 ***************************************************************************************
 '''
 import nltk
@@ -57,8 +55,51 @@ import sys
 import re
 from collections import defaultdict
 import matplotlib.pyplot as plt
-from scorer import score_function
+#from scorer import score_function
 
+def cleanfile(testText):
+
+    testText = re.sub(r'\]','',testText)
+    testText = re.sub(r'\[','',testText)
+    testText = testText.replace('\n','')
+    testText = testText = re.sub(r'or\/..','',testText)
+    testText = testText = re.sub(r'\|..','',testText)
+    return(testText)
+
+def calWordTagProbability(train_confd_WT,traintag_fd):
+    '''Method to create Word To Tag probability'''
+    word_tag_Dic = defaultdict(list)
+    for word, tags in train_confd_WT.items():
+        for t in tags:
+            word_tag_Dic[word].append(t)
+
+
+    #Created a new dictionary word_tag_proDic which stores P(word|tag) = freq(tag|word) / freq(tag)
+    word_tag_proDic= defaultdict(dict)
+    for word,listoftag in word_tag_Dic.items():
+        for tag in listoftag:
+                fre_tag_given_word= word_tag_Dic[word].count(tag)
+                fre_tag = traintag_fd[tag]
+                dictionaryValue=fre_tag_given_word/fre_tag
+                word_tag_proDic[word][tag]=dictionaryValue
+
+def calTagTransitionProbability(train_confd_Tt,traintag_fd):
+    '''Method to create Tag given previous tag probability'''
+    #Dictionary to store tag along with its previous tags (Created from train_confd_Tt)
+    tag_transtition_Dic = defaultdict(list)
+    for a, listoftags in train_confd_Tt.items():
+        for t in listoftags:
+            tag_transtition_Dic[a].append(t)
+
+
+    #Created a new dictionary tag_transtition_ProbDic which stores P(tag| previous tag) = freq(previous tag|tag) / freq(previous tag)
+    tag_transtition_ProbDic= defaultdict(dict)
+    for tag,listoftag in tag_transtition_Dic.items():
+        for previoustag in listoftag:
+                fre_tag_given_previoustag= tag_transtition_Dic[tag].count(previoustag)
+                fre_previoustag = traintag_fd[previoustag]
+                dictionaryValue=fre_tag_given_previoustag/fre_previoustag
+                tag_transtition_ProbDic[tag][previoustag]=dictionaryValue
 
 def main():
     '''
@@ -75,22 +116,31 @@ def main():
     trainText = [nltk.tag.str2tuple(t) for t in trainText.split()]
 
     #total counts of tags
+    tag_frquencies = defaultdict(list)
     traintag_fd = nltk.FreqDist(tag for (word,tag) in trainText)
         # traintag_fd.plot(cumulative=False) fun visualization not needed
+
 
     #create conditional table of [word] [POS] frequencies
     train_confd_WT = nltk.ConditionalFreqDist((w.lower(), t) for w, t in trainText)
         # print(train_confd_WT['set']['VBD'])
+
+    #Method to create Word To Tag probability
+    calWordTagProbability(train_confd_WT,traintag_fd)
 
     #create conditional table of POS following POS-1
     word_tag_pairs = nltk.bigrams(trainText)
     train_confd_Tt = nltk.ConditionalFreqDist((a[1], b[1]) for (a,b) in word_tag_pairs)
         # print(train_confd_Tt["NN"]["NN"])
 
-    #read test file
+    #Method to create Tag given previous tag probability'
+    calTagTransitionProbability(train_confd_Tt,traintag_fd)
+
     testText = open(sys.argv[2]).read()
 
     # clean test file
+    testText = cleanfile(testText)
+
     # predict and assign tags to test file words using train_confd_WT and train_confd_Tt
     # new words are automatically assigned as nouns (NN)
 
