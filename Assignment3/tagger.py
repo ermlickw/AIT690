@@ -140,7 +140,7 @@ def main():
     testText = cleanfile(testText)
 
     # predict and assign tags to test file words using the maximum values of the word tag and tag transition
-    # probabilities
+    # probabilities functions
     # new (unknown) words are automatically assigned as nouns (NN)
 
 
