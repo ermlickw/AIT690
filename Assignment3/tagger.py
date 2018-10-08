@@ -107,11 +107,8 @@ def main():
 	'''
     #open training file and clean text
     trainText = open(sys.argv[1]).read()
-    trainText = re.sub(r'\]','',trainText)
-    trainText = re.sub(r'\[','',trainText)
-    trainText = trainText.replace('\n','')
-    trainText = trainText = re.sub(r'or\/..','',trainText)
-    trainText = trainText = re.sub(r'\|..','',trainText)
+    trainText = cleanfile(trainText)
+
     #convert to tagged tuple
     trainText = [nltk.tag.str2tuple(t) for t in trainText.split()]
 
