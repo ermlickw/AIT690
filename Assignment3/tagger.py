@@ -141,7 +141,7 @@ def main():
 
     # predict and assign tags to test file words using the maximum values of the word tag and tag transition
     # probabilities
-    # new words are automatically assigned as nouns (NN)
+    # new (unknown) words are automatically assigned as nouns (NN)
 
 
 
