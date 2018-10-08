@@ -120,25 +120,27 @@ def main():
 
     #create conditional table of [word] [POS] frequencies
     train_confd_WT = nltk.ConditionalFreqDist((w.lower(), t) for w, t in trainText)
-        # print(train_confd_WT['set']['VBD'])
-
-    #Method to create Word To Tag probability
-    calWordTagProbability(train_confd_WT,traintag_fd)
+        # print(train_confd_WT['set']['VBD']) example accessing entries
 
     #create conditional table of POS following POS-1
     word_tag_pairs = nltk.bigrams(trainText)
     train_confd_Tt = nltk.ConditionalFreqDist((a[1], b[1]) for (a,b) in word_tag_pairs)
         # print(train_confd_Tt["NN"]["NN"])
 
+    #Method to create Word To Tag probability
+    calWordTagProbability(train_confd_WT,traintag_fd)
+
     #Method to create Tag given previous tag probability'
     calTagTransitionProbability(train_confd_Tt,traintag_fd)
 
-    testText = open(sys.argv[2]).read()
 
-    # clean test file
+
+    # open and clean test file
+    testText = open(sys.argv[2]).read()
     testText = cleanfile(testText)
 
-    # predict and assign tags to test file words using train_confd_WT and train_confd_Tt
+    # predict and assign tags to test file words using the maximum values of the word tag and tag transition
+    # probabilities
     # new words are automatically assigned as nouns (NN)
 
 
