@@ -57,19 +57,19 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 #from scorer import score_function
 
-def cleanfile(testText):
+def cleanfile(TextFile):
 
-    testText = re.sub(r'\]','',testText)
-    testText = re.sub(r'\[','',testText)
-    testText = testText.replace('\n','')
-    testText = testText.replace('$', '')
-    testText = testText.replace('%', '')
-    testText = testText.replace('\/', '')
-    testText = testText.replace('--', '')
-    testText = testText.replace(r'"', '')
-    testText = testText = re.sub(r'or\/..','',testText)
-    testText = testText = re.sub(r'\|..','',testText)
-    return(testText)
+    TextFile = re.sub(r'\]','',TextFile)
+    TextFile = re.sub(r'\[','',TextFile)
+    TextFile = TextFile.replace('\n','')
+    TextFile = TextFile.replace('$', '')
+    TextFile = TextFile.replace('%', '')
+    TextFile = TextFile.replace('\/', '')
+    TextFile = TextFile.replace('--', '')
+    TextFile = TextFile.replace(r'"', '')
+    TextFile = TextFile = re.sub(r'or\/..','',TextFile)
+    TextFile = TextFile = re.sub(r'\|..','',TextFile)
+    return(TextFile)
 
 def appendStartWord(test_file_sentences):
     new_sentences=[]
@@ -196,20 +196,20 @@ def main():
     #convert to tagged tuple
     trainText = [nltk.tag.str2tuple(t) for t in trainText.split()]
 
+
     #total counts of tags
     tag_frquencies = defaultdict(list)
     traintag_fd = nltk.FreqDist(tag for (word,tag) in trainText)	
-        # traintag_fd.plot(cumulative=False) fun visualization not needed
+                # traintag_fd.plot(cumulative=False) fun visualization not needed
 
- 
     #create conditional table of [word] [POS] frequencies
     train_confd_WT = nltk.ConditionalFreqDist((w.lower(), t) for w, t in trainText)
-        # print(train_confd_WT['set']['VBD'])
+                # print(train_confd_WT['set']['VBD'])
   
-    #Method to create Word To Tag probability
+    #Method to create P(word | tag) probability dictionary
     word_tag_proDic = calWordTagProbability(train_confd_WT,traintag_fd)
    
-    #create conditional table of POS following POS-1
+    #create conditional table of [POS] [POS-1] frequencies
     word_tag_pairs = nltk.bigrams(trainText)
     train_confd_Tt = nltk.ConditionalFreqDist((a[1], b[1]) for (a,b) in word_tag_pairs)
         # print(train_confd_Tt["NN"]["NN"])
@@ -220,9 +220,10 @@ def main():
 
 
 
-    testText = open(sys.argv[2]).read()
+
 
     # clean test file
+    testText = open(sys.argv[2]).read()
     testText = cleanfile(testText)
     
     #Split the file into sentences
