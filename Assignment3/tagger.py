@@ -137,7 +137,7 @@ def applyViterbiAlgo(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_P
      '''
     def assign_tags(sentence,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic):
         words=sentence[1:]
-        #This dictionary will store words along with
+        #This dictionary will store words along with4rtrwe
         tag_Dic=[]
         #For each word and tag, assigning probability as 0 initially
         for word in words:
@@ -253,7 +253,7 @@ def main():
     #evaluate performance and place in overview comment
     # score_function(predictedTags)
 
-    #add manual expert rules to reassign POS tags
+    #add manual expert rules to reassign POS tags  ---> 5.6 in NLTK book
 
     #reevaluate performance and add to overview comment
     # score_function(updatedpredictedTags)
