@@ -79,9 +79,10 @@ def appendStartWord(test_file_sentences):
     return(new_sentences)
 
 def calWordTagProbability(train_confd_WT,traintag_fd):
-    '''Method to create Word on Tag probability
+    '''Method to create Word on Tag probability. Also returns a list of all words in training set
 
     word_tag_proDic[word][tag]= dictionaryValue = freq(tag,word) / freq(tag)
+
 
     '''
 
@@ -99,7 +100,7 @@ def calWordTagProbability(train_confd_WT,traintag_fd):
                 fre_tag = traintag_fd[tag]
                 dictionaryValue=fre_tag_and_word/float(fre_tag	)		
                 word_tag_proDic[word][tag]=dictionaryValue
-    return(word_tag_proDic)
+    return(word_tag_proDic, word_tag_Dic )
 	
 def calTagTransitionProbability(train_confd_Tt,traintag_fd):
     '''Method to create Tag given previous tag probability
@@ -126,8 +127,15 @@ def calTagTransitionProbability(train_confd_Tt,traintag_fd):
     return(tag_transtition_ProbDic)
 	
 def applyViterbiAlgo(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic):
-     
-    def assign_tags(sentence,traintag_fd,word_tag_proDic,tag_transtition_ProbDic):
+     '''
+     this function assigns the most likely tags to each word in a list of sentences
+     :param new_sentences:
+     :param traintag_fd:
+     :param word_tag_proDic:
+     :param tag_transtition_ProbDic:
+     :return:
+     '''
+    def assign_tags(sentence,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic):
         words=sentence[1:]
         #This dictionary will store words along with         
         tag_Dic=[]
@@ -210,8 +218,8 @@ def main():
     train_confd_WT = nltk.ConditionalFreqDist((w.lower(), t) for w, t in trainText)
                 # print(train_confd_WT['set']['VBD'])
   
-    #Method to create P(word | tag) probability dictionary
-    word_tag_proDic = calWordTagProbability(train_confd_WT,traintag_fd)
+    #Method to create P(word | tag) probability dictionary and output a list of all words in training set
+    word_tag_proDic, word_tag_Dic = calWordTagProbability(train_confd_WT,traintag_fd)
    
     #create conditional table of [POS] [POS-1] frequencies
     word_tag_pairs = nltk.bigrams(trainText)
@@ -235,7 +243,7 @@ def main():
     new_sentences = appendStartWord(test_file_sentences)
 
 
-    applyViterbiAlgo(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic)
+    applyViterbiAlgo(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic)
     #print(new_sentences)
 
     # new words are automatically assigned as nouns (NN)

@@ -25,11 +25,10 @@
       <file leaf-file-name="tagger.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Assignment3/tagger.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2538">
-              <caret line="237" column="63" lean-forward="false" selection-start-line="237" selection-start-column="63" selection-end-line="237" selection-end-column="83" />
+            <state relative-caret-position="490">
+              <caret line="139" column="54" lean-forward="false" selection-start-line="139" selection-start-column="54" selection-end-line="139" selection-end-column="54" />
               <folding>
                 <element signature="e#3867#3878#0" expanded="true" />
-                <element signature="e#7364#9740#1" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -501,7 +500,14 @@
       <option name="project" value="LOCAL" />
       <updated>1539201903309</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="cleaning">
+      <created>1539202484024</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1539202484024</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -550,7 +556,6 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#3867#3878#0" expanded="true" />
-            <element signature="e#7364#9740#1" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -601,11 +606,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Assignment3/tagger.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2538">
-          <caret line="237" column="63" lean-forward="false" selection-start-line="237" selection-start-column="63" selection-end-line="237" selection-end-column="83" />
+        <state relative-caret-position="490">
+          <caret line="139" column="54" lean-forward="false" selection-start-line="139" selection-start-column="54" selection-end-line="139" selection-end-column="54" />
           <folding>
             <element signature="e#3867#3878#0" expanded="true" />
-            <element signature="e#7364#9740#1" expanded="true" />
           </folding>
         </state>
       </provider>
