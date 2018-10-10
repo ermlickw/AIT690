@@ -62,8 +62,13 @@ def cleanfile(testText):
     testText = re.sub(r'\]','',testText)
     testText = re.sub(r'\[','',testText)
     testText = testText.replace('\n','')
-    #testText = testText = re.sub(r'or\/..','',testText)
-    #testText = testText = re.sub(r'\|..','',testText)
+    testText = testText.replace('$', '')
+    testText = testText.replace('%', '')
+    testText = testText.replace('\/', '')
+    testText = testText.replace('--', '')
+    testText = testText.replace(r'"', '')
+    testText = testText = re.sub(r'or\/..','',testText)
+    testText = testText = re.sub(r'\|..','',testText)
     return(testText)
 
 def appendStartWord(test_file_sentences):
@@ -186,12 +191,8 @@ def main():
 	'''
     #open training file and clean text
     trainText = open(sys.argv[1]).read()
-    trainText = re.sub(r'\]','',trainText)
-    trainText = re.sub(r'\[','',trainText)
-    trainText = trainText.replace('\n','')
-    trainText = trainText = re.sub(r'or\/..','',trainText)
-    trainText = trainText = re.sub(r'\|..','',trainText)
-    
+    trainText = cleanfile(trainText)
+
     #convert to tagged tuple
     trainText = [nltk.tag.str2tuple(t) for t in trainText.split()]
 
@@ -215,14 +216,17 @@ def main():
 
     #Method to create Tag given previous tag probability'
     tag_transtition_ProbDic = calTagTransitionProbability(train_confd_Tt,traintag_fd)	    
-   
+
+
+
+
     testText = open(sys.argv[2]).read()
 
     # clean test file
     testText = cleanfile(testText)
     
     #Split the file into sentences
-    test_file_sentences = testText.split(' . ')
+    test_file_sentences = nltk.sent_tokenize(testText)
 
     new_sentences = appendStartWord(test_file_sentences)
 	
