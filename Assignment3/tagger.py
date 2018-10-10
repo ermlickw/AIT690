@@ -67,31 +67,32 @@ def cleanfile(testText):
     return(testText)
 
 def appendStartWord(test_file_sentences):
-    new_words=[]
+    new_sentences=[]
     
     for sentence in test_file_sentences:
+        new_words=[]
         new_words.append('start_')
         sentence_word = sentence.split()
         for word in sentence_word:
             new_words.append(word)
         new_words.append('.')
-    return(new_words)
+        new_sentences.append(new_words)
+    return(new_sentences)
 
 def calWordTagProbability(train_confd_WT,traintag_fd):
-    '''Method to create Word To Tag probability'''
+    '''Method to create Word on Tag probability'''
     word_tag_Dic = defaultdict(list)
     for word, tags in train_confd_WT.items():
         for t in tags:
             word_tag_Dic[word].append(t)
-
-    
-    #Created a new dictionary word_tag_proDic which stores P(word|tag) = freq(tag|word) / freq(tag)
+   
+    #Created a new dictionary word_tag_proDic which stores P(word|tag) = freq(tag,word) / freq(tag)
     word_tag_proDic= defaultdict(dict)
     for word,listoftag in word_tag_Dic.items(): 
         for tag in listoftag:
-                fre_tag_given_word= word_tag_Dic[word].count(tag)
+                fre_tag_and_word= train_confd_WT[word][tag]  #freq(tag,word)
                 fre_tag = traintag_fd[tag]
-                dictionaryValue=fre_tag_given_word/fre_tag			
+                dictionaryValue=fre_tag_and_word/float(fre_tag	)		
                 word_tag_proDic[word][tag]=dictionaryValue
     #print(word_tag_proDic['signature']['NN'])
     return(word_tag_proDic)
@@ -105,24 +106,34 @@ def calTagTransitionProbability(train_confd_Tt,traintag_fd):
             tag_transtition_Dic[a].append(t)
 
     
-    #Created a new dictionary tag_transtition_ProbDic which stores P(tag| previous tag) = freq(previous tag|tag) / freq(previous tag)
+    #Created a new dictionary tag_transtition_ProbDic which stores P(tag| previous tag) = freq(previous tag,tag) / freq(previous tag)
     tag_transtition_ProbDic= defaultdict(dict)
     for tag,listoftag in tag_transtition_Dic.items(): 
         for previoustag in listoftag:
-                fre_tag_given_previoustag= tag_transtition_Dic[tag].count(previoustag)
+                fre_tag_and_previoustag= train_confd_Tt[tag][previoustag]
                 fre_previoustag = traintag_fd[previoustag]
-                dictionaryValue=fre_tag_given_previoustag/fre_previoustag			
+                dictionaryValue=fre_tag_and_previoustag/float(fre_previoustag)			
                 tag_transtition_ProbDic[tag][previoustag]=dictionaryValue
     return(tag_transtition_ProbDic)
 	
-def applyViterbiAlgo(new_words,traintag_fd,word_tag_proDic,tag_transtition_ProbDic):
-    #This dictionary will store words along with 
-    path_ProbDic = defaultdict(dict)
-	
-    #For each word and tag, assigning probability as 0 initially
-    for word in new_words:
-        for tag in traintag_fd:
-            path_ProbDic[word][tag] = 0.0000
+def applyViterbiAlgo(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic):
+     
+    def assign_tags(sentence,traintag_fd,word_tag_proDic,tag_transtition_ProbDic):
+        words=sentence[1:]
+        #This dictionary will store words along with         
+        tag_Dic=[]
+        #For each word and tag, assigning probability as 0 initially
+        for word in words:
+           path_ProbDic = defaultdict(dict)
+           for tag in traintag_fd:
+              if words.index(word)==0:
+                  try:
+                    path_ProbDic[tag]=word_tag_proDic[word][tag]
+                  except: 
+                    path_ProbDic[tag]=0
+                  tag.append()
+    '''
+
     
     #For the first word which is <start_>, assign probability with all tags as 1 
     for tag in traintag_fd:
@@ -168,7 +179,7 @@ def applyViterbiAlgo(new_words,traintag_fd,word_tag_proDic,tag_transtition_ProbD
                     word_tag_proDic[new_words[i]][tag] = 0.99
                     path_ProbDic[new_words[i]][tag] = max(viterbi_prob) * word_tag_proDic[new_words[i]][tag]
 					
-		
+		'''
 def main():
     '''
     This is the main function.
@@ -180,6 +191,7 @@ def main():
     trainText = trainText.replace('\n','')
     trainText = trainText = re.sub(r'or\/..','',trainText)
     trainText = trainText = re.sub(r'\|..','',trainText)
+    
     #convert to tagged tuple
     trainText = [nltk.tag.str2tuple(t) for t in trainText.split()]
 
@@ -212,9 +224,9 @@ def main():
     #Split the file into sentences
     test_file_sentences = testText.split(' . ')
 
-    new_words = appendStartWord(test_file_sentences)
+    new_sentences = appendStartWord(test_file_sentences)
 	
-    applyViterbiAlgo(new_words,traintag_fd,word_tag_proDic,tag_transtition_ProbDic)
+    applyViterbiAlgo(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic)
     #print(new_sentences)
 
     # predict and assign tags to test file words using train_confd_WT and train_confd_Tt
