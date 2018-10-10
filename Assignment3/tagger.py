@@ -79,7 +79,11 @@ def appendStartWord(test_file_sentences):
     return(new_sentences)
 
 def calWordTagProbability(train_confd_WT,traintag_fd):
-    '''Method to create Word on Tag probability'''
+    '''Method to create Word on Tag probability
+
+    word_tag_proDic[word][tag]= dictionaryValue = freq(tag,word) / freq(tag)
+
+    '''
 
     #create dictionary of all words
     word_tag_Dic = defaultdict(list)
@@ -95,11 +99,14 @@ def calWordTagProbability(train_confd_WT,traintag_fd):
                 fre_tag = traintag_fd[tag]
                 dictionaryValue=fre_tag_and_word/float(fre_tag	)		
                 word_tag_proDic[word][tag]=dictionaryValue
-    #print(word_tag_proDic['signature']['NN'])
     return(word_tag_proDic)
 	
 def calTagTransitionProbability(train_confd_Tt,traintag_fd):
-    '''Method to create Tag given previous tag probability'''
+    '''Method to create Tag given previous tag probability
+
+     tag_transtition_ProbDic[tag][previoustag]= dictionaryValue = freq(previous tag,tag) / freq(previous tag)
+
+    '''
 
     #Dictionary to store tag along with its previous tags (Created from train_confd_Tt)
     tag_transtition_Dic = defaultdict(list)
@@ -226,13 +233,11 @@ def main():
     #Split the file into sentences and add start tag
     test_file_sentences = nltk.sent_tokenize(testText)
     new_sentences = appendStartWord(test_file_sentences)
-    print(new_sentences)
 
 
     applyViterbiAlgo(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic)
     #print(new_sentences)
 
-    # predict and assign tags to test file words using train_confd_WT and train_confd_Tt
     # new words are automatically assigned as nouns (NN)
 
 
