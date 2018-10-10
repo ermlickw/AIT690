@@ -25,11 +25,11 @@
       <file leaf-file-name="tagger.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Assignment3/tagger.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="516">
-              <caret line="211" column="58" lean-forward="false" selection-start-line="211" selection-start-column="58" selection-end-line="211" selection-end-column="58" />
+            <state relative-caret-position="410">
+              <caret line="102" column="4" lean-forward="false" selection-start-line="102" selection-start-column="4" selection-end-line="102" selection-end-column="4" />
               <folding>
                 <element signature="e#3867#3878#0" expanded="true" />
-                <element signature="e#7339#9715#1" expanded="true" />
+                <element signature="e#7214#9590#1" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -487,7 +487,14 @@
       <option name="project" value="LOCAL" />
       <updated>1539201339685</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="cleaning">
+      <created>1539201521704</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1539201521704</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -536,7 +543,7 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#3867#3878#0" expanded="true" />
-            <element signature="e#7339#9715#1" expanded="true" />
+            <element signature="e#7214#9590#1" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -587,11 +594,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Assignment3/tagger.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="516">
-          <caret line="211" column="58" lean-forward="false" selection-start-line="211" selection-start-column="58" selection-end-line="211" selection-end-column="58" />
+        <state relative-caret-position="410">
+          <caret line="102" column="4" lean-forward="false" selection-start-line="102" selection-start-column="4" selection-end-line="102" selection-end-column="4" />
           <folding>
             <element signature="e#3867#3878#0" expanded="true" />
-            <element signature="e#7339#9715#1" expanded="true" />
+            <element signature="e#7214#9590#1" expanded="true" />
           </folding>
         </state>
       </provider>

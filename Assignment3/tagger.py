@@ -72,26 +72,22 @@ def cleanfile(TextFile):
     return(TextFile)
 
 def appendStartWord(test_file_sentences):
-    new_sentences=[]
-    
+    new_sentences = []
     for sentence in test_file_sentences:
-        new_words=[]
-        new_words.append('start_')
-        sentence_word = sentence.split()
-        for word in sentence_word:
-            new_words.append(word)
-        new_words.append('.')
-        new_sentences.append(new_words)
+        sentence = "<start> " + sentence
+        new_sentences.append(sentence)
     return(new_sentences)
 
 def calWordTagProbability(train_confd_WT,traintag_fd):
     '''Method to create Word on Tag probability'''
+
+    #create dictionary of all words
     word_tag_Dic = defaultdict(list)
     for word, tags in train_confd_WT.items():
         for t in tags:
             word_tag_Dic[word].append(t)
    
-    #Created a new dictionary word_tag_proDic which stores P(word|tag) = freq(tag,word) / freq(tag)
+    #create dictionary word_tag_proDic which stores P(word|tag) = freq(tag,word) / freq(tag)
     word_tag_proDic= defaultdict(dict)
     for word,listoftag in word_tag_Dic.items(): 
         for tag in listoftag:
@@ -104,6 +100,7 @@ def calWordTagProbability(train_confd_WT,traintag_fd):
 	
 def calTagTransitionProbability(train_confd_Tt,traintag_fd):
     '''Method to create Tag given previous tag probability'''
+
     #Dictionary to store tag along with its previous tags (Created from train_confd_Tt)
     tag_transtition_Dic = defaultdict(list)
     for a, listoftags in train_confd_Tt.items():
@@ -214,7 +211,7 @@ def main():
     train_confd_Tt = nltk.ConditionalFreqDist((a[1], b[1]) for (a,b) in word_tag_pairs)
         # print(train_confd_Tt["NN"]["NN"])
 
-    #Method to create Tag given previous tag probability'
+    #Method to create P(T | T-1) probability dictionary
     tag_transtition_ProbDic = calTagTransitionProbability(train_confd_Tt,traintag_fd)	    
 
 
@@ -226,11 +223,12 @@ def main():
     testText = open(sys.argv[2]).read()
     testText = cleanfile(testText)
     
-    #Split the file into sentences
+    #Split the file into sentences and add start tag
     test_file_sentences = nltk.sent_tokenize(testText)
-
     new_sentences = appendStartWord(test_file_sentences)
-	
+    print(new_sentences)
+
+
     applyViterbiAlgo(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic)
     #print(new_sentences)
 
