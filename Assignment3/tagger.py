@@ -172,34 +172,21 @@ def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDi
 
     #use probability formulas to predict tags for single blanks
 
-    for elem, tag in enumerate(predictedTags):
-
-        prevwordtag = predictedTags[(elem - 1) % len(predictedTags)][1]
-        thisword = predictedTags[elem][0]
-        thiswordtag = predictedTags[elem][1]
-        nextwordtag = predictedTags[(elem + 1) % len(predictedTags)][1]
-
-        # assign most likely tag based on training data to words with no adjacent tags
-        if (thiswordtag == "BLANK"):
-            predictedTags[elem][1] = "X"
+    # for elem, tag in enumerate(predictedTags):
+    #
+    #     prevwordtag = predictedTags[(elem - 1) % len(predictedTags)][1]
+    #     thisword = predictedTags[elem][0]
+    #     thiswordtag = predictedTags[elem][1]
+    #     nextwordtag = predictedTags[(elem + 1) % len(predictedTags)][1]
+    #
+    #     # assign most likely tag based on training data to words with no adjacent tags
+    #     if (thiswordtag == "BLANK"):
+    #         predictedTags[elem][1] = "X"
 
 
 
     print(predictedTags)
 
-    # x=0
-    # for entry,tag in predictedTags:
-    #     if tag =='':
-    #         x=x+1
-    # print(x/len(predictedTags))
-    #
-    # i=0
-    # for entry in word_tag_Dic:
-    #     if len(word_tag_Dic[entry]) >1:
-    #         # print(word_tag_Dic[entry])
-    #         i=i+1
-    # # print(i)
-    # print(i/len(word_tag_Dic))
     return
 
 
