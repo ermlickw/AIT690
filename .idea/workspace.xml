@@ -25,8 +25,8 @@
       <file leaf-file-name="tagger.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Assignment3/tagger.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="640">
-              <caret line="180" column="40" lean-forward="true" selection-start-line="180" selection-start-column="40" selection-end-line="180" selection-end-column="40" />
+            <state relative-caret-position="304">
+              <caret line="185" column="99" lean-forward="true" selection-start-line="185" selection-start-column="99" selection-end-line="185" selection-end-column="99" />
               <folding>
                 <element signature="e#3867#3878#0" expanded="true" />
               </folding>
@@ -577,7 +577,14 @@
       <option name="project" value="LOCAL" />
       <updated>1539291508372</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="incomplete tagging...">
+      <created>1539292258613</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1539292258613</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -679,8 +686,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Assignment3/tagger.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="640">
-          <caret line="180" column="40" lean-forward="true" selection-start-line="180" selection-start-column="40" selection-end-line="180" selection-end-column="40" />
+        <state relative-caret-position="304">
+          <caret line="185" column="99" lean-forward="true" selection-start-line="185" selection-start-column="99" selection-end-line="185" selection-end-column="99" />
           <folding>
             <element signature="e#3867#3878#0" expanded="true" />
           </folding>

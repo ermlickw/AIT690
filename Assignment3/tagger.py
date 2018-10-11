@@ -53,6 +53,7 @@ $ cat pos-tagging-rep
 import nltk
 import sys
 import re
+import operator
 from collections import defaultdict
 import matplotlib.pyplot as plt
 #from scorer import score_function
@@ -169,16 +170,24 @@ def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDi
 
     #use probability formulas to predict tags for single blanks
 
-    # for elem, tag in enumerate(predictedTags):
-    #
-    #     prevwordtag = predictedTags[(elem - 1) % len(predictedTags)][1]
-    #     thisword = predictedTags[elem][0]
-    #     thiswordtag = predictedTags[elem][1]
-    #     nextwordtag = predictedTags[(elem + 1) % len(predictedTags)][1]
-    #
-    #     # assign blanks based on probability functions
-    #     if (thiswordtag == "BLANK"):
-    #         predictedTags[elem][1] = #
+    for elem, tag in enumerate(predictedTags):
+
+        prevwordtag = predictedTags[(elem - 1) % len(predictedTags)][1]
+        thisword = predictedTags[elem][0]
+        thiswordtag = predictedTags[elem][1]
+        nextwordtag = predictedTags[(elem + 1) % len(predictedTags)][1]
+
+        # assign blanks based on probability functions
+        if (thiswordtag == "BLANK"):
+            scores = defaultdict(list)
+            #select possible tag with greatest frequency
+            for tag in list(train_confd_WT[thisword])[0]:
+                scores[tag] = predictedTags[elem][1] = word_tag_proDic[thisword][tag] * \
+                                                       tag_transtition_ProbDic[nextwordtag][tag] *\
+                                                       tag_transtition_ProbDic[tag][prevwordtag]
+            predictedTags[elem][1] = max(scores.iteritems(), key=operator.itemgetter(1))[0]
+
+
 
     print(predictedTags)
 
