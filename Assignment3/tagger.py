@@ -69,7 +69,6 @@ def cleanfile(TextFile):
     TextFile = TextFile.replace(r'"', '')
     TextFile = TextFile = re.sub(r'or\/..','',TextFile)
     TextFile = TextFile = re.sub(r'\|..','',TextFile)
-    TextFile = TextFile.lower()
     return(TextFile)
 
 def appendStartWord(test_file_sentences):
