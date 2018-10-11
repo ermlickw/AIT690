@@ -63,8 +63,9 @@ def cleanfile(TextFile):
     TextFile = re.sub(r'\]','',TextFile)
     TextFile = re.sub(r'\[','',TextFile)
     TextFile = TextFile.replace('\n','')
-    TextFile = TextFile.replace('$', '')
+    TextFile = TextFile.replace('``', '')
     TextFile = TextFile.replace('%', '')
+    TextFile = TextFile.replace('$', '')
     TextFile = TextFile.replace('\/', '')
     TextFile = TextFile.replace('--', '')
     TextFile = TextFile.replace(r'"', '')
@@ -161,6 +162,7 @@ def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDi
             if (prevwordtag == "BLANK" and nextwordtag == "BLANK" and thiswordtag == "BLANK"):
                 predictedTags[elem][1] = list(train_confd_WT[predictedTags[elem][0]])[0] #assign most likely in training set
 
+
             if i==4: #assign most likely tag to consecutive blanks so only single blanks remain
                 if (nextwordtag == "BLANK" and thiswordtag == "BLANK"):
                     predictedTags[elem][1] = list(train_confd_WT[predictedTags[elem][0]])[0] #assign most likely in training set
@@ -169,7 +171,6 @@ def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDi
             loop = False
 
     #use probability formulas to predict tags for single blanks
-
     for elem, tag in enumerate(predictedTags):
 
         prevwordtag = predictedTags[(elem - 1) % len(predictedTags)][1]
@@ -178,19 +179,21 @@ def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDi
         nextwordtag = predictedTags[(elem + 1) % len(predictedTags)][1]
 
         # assign blanks based on probability functions
-        if (thiswordtag == "BLANK"):
+        if (thiswordtag == "BLANK" and list(train_confd_WT[thisword])[0] != None):
             scores = defaultdict(list)
             #select possible tag with greatest frequency
-            for tag in list(train_confd_WT[thisword])[0]:
-                scores[tag] = predictedTags[elem][1] = word_tag_proDic[thisword][tag] * \
-                                                       tag_transtition_ProbDic[nextwordtag][tag] *\
+            for tag in list(train_confd_WT[thisword])[0].split():
+                try:
+                    scores[tag] = word_tag_proDic[thisword][tag] * \
+                                                       tag_transtition_ProbDic[tag][nextwordtag]*\
                                                        tag_transtition_ProbDic[tag][prevwordtag]
-            predictedTags[elem][1] = max(scores.iteritems(), key=operator.itemgetter(1))[0]
+                except KeyError:
+                    scores[tag]=0
 
+            predictedTags[elem][1] = max(scores.items(), key=operator.itemgetter(1))[0]
 
 
     print(predictedTags)
-
     return
 
 
