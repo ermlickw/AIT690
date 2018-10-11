@@ -92,7 +92,8 @@ def calWordTagProbability(train_confd_WT,traintag_fd):
     for word, tags in train_confd_WT.items():
         for t in tags:
             word_tag_Dic[word].append(t)
-   
+
+
     #create dictionary word_tag_proDic which stores P(word|tag) = freq(tag,word) / freq(tag)
     word_tag_proDic= defaultdict(dict)
     for word,listoftag in word_tag_Dic.items(): 
@@ -127,7 +128,7 @@ def calTagTransitionProbability(train_confd_Tt,traintag_fd):
                 tag_transtition_ProbDic[tag][previoustag]=dictionaryValue
     return(tag_transtition_ProbDic)
 	
-def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic):
+def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic, train_confd_WT):
     predictedTags = []
 
 
@@ -175,13 +176,12 @@ def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDi
     #     thiswordtag = predictedTags[elem][1]
     #     nextwordtag = predictedTags[(elem + 1) % len(predictedTags)][1]
     #
-    #     # assign most likely tag based on training data to words with no adjacent tags
+    #     # assign blanks based on probability functions
     #     if (thiswordtag == "BLANK"):
     #         predictedTags[elem][1] = "X"
 
-
-
-    print(predictedTags)
+    print(train_confd_WT.items())
+    # print(word_tag_proDic)
 
     return
 
@@ -206,7 +206,7 @@ def main():
     #create conditional table of [word] [POS] frequencies
     train_confd_WT = nltk.ConditionalFreqDist((w.lower(), t) for w, t in trainText)
                 # print(train_confd_WT['set']['VBD'])
-  
+
     #Method to create P(word | tag) probability dictionary and output a list of all words in training set
     word_tag_proDic, word_tag_Dic = calWordTagProbability(train_confd_WT,traintag_fd)
    
@@ -229,7 +229,7 @@ def main():
     new_sentences = appendStartWord(test_file_sentences)
 
 
-    assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic)
+    assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic, train_confd_WT)
     #print(new_sentences)
 
     # new words are automatically assigned as nouns (NN)
