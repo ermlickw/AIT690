@@ -167,7 +167,7 @@ def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDi
 
         i+=1
 
-        if i==5:
+        if i==5: #this many iterations needed to kill all triple  double blanks
             loop = False
 
     #use probability formulas to predict tags for single blanks
