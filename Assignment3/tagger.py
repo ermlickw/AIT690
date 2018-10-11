@@ -126,77 +126,12 @@ def calTagTransitionProbability(train_confd_Tt,traintag_fd):
                 tag_transtition_ProbDic[tag][previoustag]=dictionaryValue
     return(tag_transtition_ProbDic)
 	
-def applyViterbiAlgo(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic):
-     '''
-     this function assigns the most likely tags to each word in a list of sentences
-     :param new_sentences:
-     :param traintag_fd:
-     :param word_tag_proDic:
-     :param tag_transtition_ProbDic:
-     :return:
-     '''
-    def assign_tags(sentence,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic):
-        words=sentence[1:]
-        #This dictionary will store words along with4rtrwe
-        tag_Dic=[]
-        #For each word and tag, assigning probability as 0 initially
-        for word in words:
-           path_ProbDic = defaultdict(dict)
-           for tag in traintag_fd:
-              if words.index(word)==0:
-                  try:
-                    path_ProbDic[tag]=word_tag_proDic[word][tag]
-                  except: 
-                    path_ProbDic[tag]=0
-                  tag.append()
-    '''
+def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic):
+    predictedTags = []
 
-    
-    #For the first word which is <start_>, assign probability with all tags as 1 
-    for tag in traintag_fd:
-        path_ProbDic[new_words[0]][tag] = 1.0000
-    
-    
-    #print(word_tag_proDic['signature']['NN'])
-    #For the second word after <start_>, calculate probability with all tags 
-    for tag in traintag_fd: 
-        #print(tag_transtition_ProbDic) 	
-        try:
-            tagTransProb = tag_transtition_ProbDic['.'][tag] 
-        except KeyError:
-            tagTransProb = 0.1
-        try:
-            path_ProbDic[new_words[1]][tag] = tagTransProb * path_ProbDic[new_words[0]][tag]* word_tag_proDic[new_words[1]][tag]		
-        except KeyError:
-            word_tag_proDic[new_words[1]][tag] = 0.99
-            path_ProbDic[new_words[1]][tag] = tagTransProb * path_ProbDic[new_words[0]][tag]* word_tag_proDic[new_words[1]][tag]
-		#print(path_ProbDicValue)
-        
-		
-    #Loop through all the words starting at word 3, and calculate viterbi probability which means each word is paired with each tag and path_ProbDic stores the probability of this pair
-    for i in range(2, len(new_words)):
-    #for i in range(2, 4):
-        for tag in traintag_fd:
-            viterbi_prob = []
-            for previous_tag in traintag_fd:
-                #print(new_words[i-1], previous_tag, tag)
-                #print(tag_transtition_ProbDic['RBR']['NNP'])
-                try:
-                    viterbi_prob.append(path_ProbDic[new_words[i-1]][previous_tag] * tag_transtition_ProbDic[previous_tag][tag])
-                    #print(i, previous_tag, new_words[i-1],path_ProbDic[new_words[i-1]][previous_tag])
-                except KeyError:
-                    tag_transtition_ProbDic[previous_tag][tag]=0.1
-                    viterbi_prob.append(path_ProbDic[new_words[i-1]][previous_tag] * tag_transtition_ProbDic[previous_tag][tag])
-                try:
-                    #print(max(viterbi_prob))
-                    path_ProbDic[new_words[i]][tag] = max(viterbi_prob) * word_tag_proDic[new_words[i]][tag]
-                    #print(path_ProbDic[new_words[i]][tag],new_words[i],tag)
-                    #print(path_ProbDic[was][RB])
-                except KeyError:
-                    word_tag_proDic[new_words[i]][tag] = 0.99
-                    path_ProbDic[new_words[i]][tag] = max(viterbi_prob) * word_tag_proDic[new_words[i]][tag]
-					
-		'''
+    return
+
+
 def main():
     '''
     This is the main function.
@@ -229,10 +164,7 @@ def main():
     #Method to create P(T | T-1) probability dictionary
     tag_transtition_ProbDic = calTagTransitionProbability(train_confd_Tt,traintag_fd)	    
 
-
-
-
-
+####
 
     # clean test file
     testText = open(sys.argv[2]).read()
@@ -243,7 +175,7 @@ def main():
     new_sentences = appendStartWord(test_file_sentences)
 
 
-    applyViterbiAlgo(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic)
+    assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic)
     #print(new_sentences)
 
     # new words are automatically assigned as nouns (NN)
