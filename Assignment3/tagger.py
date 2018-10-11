@@ -141,10 +141,8 @@ def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDi
                     predictedTags.append([word, "BLANK"])
                 else:
                     predictedTags.append([word, 'NN'])
-                    # print(word)
-                    # print(word_tag_Dic[word])
 
-    # print(predictedTags)
+
     #assign most likely tag based on training data to words with no adjacent tags
     loop = True
     i = 1
@@ -159,14 +157,12 @@ def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDi
 
             # assign most likely tag based on training data to words with no adjacent tags
             if (prevwordtag == "BLANK" and nextwordtag == "BLANK" and thiswordtag == "BLANK"):
-                predictedTags[elem][1] = "X"
+                predictedTags[elem][1] = "X" #assign most likely in training set
 
             if i==4: #assign most likely tag to consecutive blanks so only single blanks remain
                 if (nextwordtag == "BLANK" and thiswordtag == "BLANK"):
-                    predictedTags[elem][1] = "Y"
-
+                    predictedTags[elem][1] = "Y" #assign most likely in training set
         i+=1
-
         if i==5: #this many iterations needed to kill all triple  double blanks
             loop = False
 
