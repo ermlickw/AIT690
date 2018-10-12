@@ -83,10 +83,7 @@ def appendStartWord(test_file_sentences):
 
 def calWordTagProbability(train_confd_WT,traintag_fd):
     '''Method to create Word on Tag probability. Also returns a list of all words in training set
-
     word_tag_proDic[word][tag]= dictionaryValue = freq(tag,word) / freq(tag)
-
-
     '''
 
     #create dictionary of all words
@@ -108,9 +105,7 @@ def calWordTagProbability(train_confd_WT,traintag_fd):
 	
 def calTagTransitionProbability(train_confd_Tt,traintag_fd):
     '''Method to create Tag given previous tag probability
-
      tag_transtition_ProbDic[tag][previoustag]= dictionaryValue = freq(previous tag,tag) / freq(previous tag)
-
     '''
 
     #Dictionary to store tag along with its previous tags (Created from train_confd_Tt)
@@ -193,10 +188,33 @@ def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDi
             predictedTags[elem][1] = max(scores.items(), key=operator.itemgetter(1))[0]
 
 
+    #print(predictedTags)
+    return(predictedTags)
+
+def apply_rules(predictedTags):
+
+    #RULE 1: Tag a word as an adjective, if it is preceded by a determiner and followed by noun, this is contextual rule
+    for elem, tag in enumerate(predictedTags):
+        prevwordtag = predictedTags[(elem - 1) % len(predictedTags)][1]
+        thisword = predictedTags[elem][0]
+        thiswordtag = predictedTags[elem][1]
+        nextwordtag = predictedTags[(elem + 1) % len(predictedTags)][1]
+		
+        if(prevwordtag == 'DT' and nextwordtag == "NN" and thiswordtag != "NN" and thiswordtag != "NNP"):
+            print(thisword)
+            predictedTags[elem][1] = "JJ"
+			
+    for elem, tag in enumerate(predictedTags):
+        prevwordtag = predictedTags[(elem - 1) % len(predictedTags)][1]
+        thisword = predictedTags[elem][0]
+        thiswordtag = predictedTags[elem][1]
+        nextwordtag = predictedTags[(elem + 1) % len(predictedTags)][1]
+		
+        if(prevwordtag == 'DT' and nextwordtag == "NN" and thiswordtag != "NN" and thiswordtag != "NNP"):
+            print(thisword)
+            predictedTags[elem][1] = "JJ"
     print(predictedTags)
-    return
-
-
+	
 def main():
     '''
     This is the main function.
@@ -240,9 +258,8 @@ def main():
     new_sentences = appendStartWord(test_file_sentences)
 
 
-    assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic, train_confd_WT)
-    #print(new_sentences)
-
+    predictedTags = assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic, train_confd_WT)
+    apply_rules(predictedTags)
     # new words are automatically assigned as nouns (NN)
 
 
