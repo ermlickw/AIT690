@@ -193,7 +193,7 @@ def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDi
 
 def apply_rules(predictedTags):
 
-    #RULE 1: Tag a word as an adjective, if it is preceded by a determiner and followed by noun, this is contextual rule
+    #RULE 1: Tag a word as an adjective if its current tag is not NN or NNP AND if it is preceded by a determiner and followed by noun, this is contextual rule
     for elem, tag in enumerate(predictedTags):
         prevwordtag = predictedTags[(elem - 1) % len(predictedTags)][1]
         thisword = predictedTags[elem][0]
