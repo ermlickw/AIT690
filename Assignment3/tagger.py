@@ -220,7 +220,10 @@ def apply_rules(predictedTags,word_tag_proDic,word_tag_Dic):
         
         if(thiswordtag == "DT" and previousword == "all"):
             predictedTags[elem - 1][1] = "PDT"
-				
+		
+        #RULE 4: Tag all the words ending with "ous" as adjectives
+        if re.search(r".ous\b",thisword):
+            predictedTags[elem][1] = "JJ"
     print(predictedTags)
   
 def main():
