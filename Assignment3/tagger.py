@@ -191,30 +191,38 @@ def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDi
     #print(predictedTags)
     return(predictedTags)
 
-def apply_rules(predictedTags):
+def apply_rules(predictedTags,word_tag_proDic,word_tag_Dic):
 
-    #RULE 1: Tag a word as an adjective if its current tag is not NN or NNP AND if it is preceded by a determiner and followed by noun, this is contextual rule
+    #print(predictedTags)
+
     for elem, tag in enumerate(predictedTags):
         prevwordtag = predictedTags[(elem - 1) % len(predictedTags)][1]
         thisword = predictedTags[elem][0]
+        previousword = predictedTags[elem -1][0]
         thiswordtag = predictedTags[elem][1]
         nextwordtag = predictedTags[(elem + 1) % len(predictedTags)][1]
-		
+
+        #RULE 1: Tag a word as an adjective if its current tag is not NN or NNP AND if it is preceded by a determiner and followed by noun, this is contextual rule
         if(prevwordtag == 'DT' and nextwordtag == "NN" and thiswordtag != "NN" and thiswordtag != "NNP"):
-            print(thisword)
             predictedTags[elem][1] = "JJ"
-			
-    for elem, tag in enumerate(predictedTags):
-        prevwordtag = predictedTags[(elem - 1) % len(predictedTags)][1]
-        thisword = predictedTags[elem][0]
-        thiswordtag = predictedTags[elem][1]
-        nextwordtag = predictedTags[(elem + 1) % len(predictedTags)][1]
-		
-        if(prevwordtag == 'DT' and nextwordtag == "NN" and thiswordtag != "NN" and thiswordtag != "NNP"):
-            print(thisword)
-            predictedTags[elem][1] = "JJ"
+
+        #RULE 2: Eliminate VBN If VBD is an option when VBN|VBD follows <start>PRP
+        if(thiswordtag == "PRP" and previousword == "<start>" and nextwordtag!="VBD"):
+            nextword = predictedTags[elem + 1][0]
+            if len(word_tag_Dic[nextword]) == 2:
+                if ((word_tag_Dic[nextword][0] == "VBN" and word_tag_Dic[nextword][1] == "VBD") or (word_tag_Dic[nextword][0] == "VBD" and word_tag_Dic[nextword][1] == "VBN")):
+                    predictedTags[elem + 1][1] = "VBD"
+         
+        #RULE 3: Tagging all "the" to determiners. "All" followed by a "determiner" is predeterminer 
+        if(thisword == "the"):
+            predictedTags[elem][1] = "DT"
+            thiswordtag = predictedTags[elem][1]
+        
+        if(thiswordtag == "DT" and previousword == "all"):
+            predictedTags[elem - 1][1] = "PDT"
+				
     print(predictedTags)
-	
+  
 def main():
     '''
     This is the main function.
@@ -259,7 +267,8 @@ def main():
 
 
     predictedTags = assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic, train_confd_WT)
-    apply_rules(predictedTags)
+    apply_rules(predictedTags,word_tag_proDic,word_tag_Dic)
+    
     # new words are automatically assigned as nouns (NN)
 
 
