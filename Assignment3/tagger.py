@@ -224,7 +224,11 @@ def apply_rules(predictedTags,word_tag_proDic,word_tag_Dic):
         #RULE 4: Tag all the words ending with "ous" as adjectives
         if re.search(r".ous\b",thisword):
             predictedTags[elem][1] = "JJ"
-    print(predictedTags)
+						
+        #RULE 5: NN -> VBG if the tag of the following word is 'DT'
+        if(thiswordtag == "NN" and nextwordtag == "DT"):
+           predictedTags[elem][1] = "VBG"
+    #print(predictedTags)
   
 def main():
     '''
