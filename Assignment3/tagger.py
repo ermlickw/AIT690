@@ -275,10 +275,13 @@ def main():
 
 
     predictedTags = assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic, train_confd_WT)
-    predictedTags = apply_rules(predictedTags,word_tag_proDic,word_tag_Dic)
-    print(predictedTags)  
+    predictedTags = apply_rules(predictedTags,word_tag_proDic,word_tag_Dic) 
     # new words are automatically assigned as nouns (NN)
 
+    with open("pos-test-with-tags.txt", "a+") as text_file:
+        for item in predictedTags:
+	        text_file.write(item)
+	        text_file.write('\n')
 
 
     #evaluate performance and place in overview comment
