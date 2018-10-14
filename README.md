@@ -62,3 +62,39 @@ The .txt files used in this project are from <http://www.gutenberg.org>. Thus, y
 
 Some of the code for fetching the file and calculating Conditional Frequency Distribution is picked up from NTLK Book.
 https://www.nltk.org/book/
+
+**************************************************************************************<br>
+# AIT690-Assignment3
+
+This is a python program which assigns parts of speech tags to a training file
+which maximize P(tag|word). For words which are not included in the training file,
+they are assumed to be NNself. Words which only have one part of speech in the training
+data are labeled as that part of speech in the test file. Words with multiple
+potential parts of speech which have unlabeled neighbors are tagged as their
+most likely tag in the training dataset. After this proceedure, untagged words
+with tagged neighbors were assigned based on maximizing their conditional
+probabiities. The accuracy of our model before additional POS rules were applied
+was %55.17. After the addition of the rules, our accuracy increased to 80.87%.
+
+The labeled training data is "pos-train.txt"
+The untagged test file is "pos-test.txt"
+The predicted labeled test data is "pos-test-with-tags.txt"
+The golden standard labeled test data is "pos-test-key.txt"
+The scoring file is "scorer.py"
+
+"pos-tagging-report.txt" and "tagger-log.txt" are logging and reporting files
+
+
+Note that if your accuracy is unusually low (less than the most likely tag baseline) that is a sign there is a
+significant problem in your tagger, and you should work to resolve that before submission.
+Please do not modify any of the files found in PA3.zip. If there is some unusual situation in that text,
+please ask me or the TA.
+
+The script can be run by entering
+$  python tagger.py pos-train.txt pos-test.txt > pos-test-with-tags.txt
+$ python scorer.py pos-test-with-tags.txt pos-test-key.txt > pos-taggingreport.txt
+
+Some of the code for the probability tables and confusion matrix was obtained from the NTLK Book.
+https://www.nltk.org/book/
+
+Some of the rules were obtained from the Speech and Language Processing Book by Jurafsky et al.
