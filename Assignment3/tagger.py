@@ -95,14 +95,14 @@ def calWordTagProbability(train_confd_WT,traintag_fd):
 
     #create dictionary word_tag_proDic which stores P(word|tag) = freq(tag,word) / freq(tag)
     word_tag_proDic= defaultdict(dict)
-    for word,listoftag in word_tag_Dic.items(): 
+    for word,listoftag in word_tag_Dic.items():
         for tag in listoftag:
                 fre_tag_and_word= train_confd_WT[word][tag]  #freq(tag,word)
                 fre_tag = traintag_fd[tag]
-                dictionaryValue=fre_tag_and_word/float(fre_tag	)		
+                dictionaryValue=fre_tag_and_word/float(fre_tag	)
                 word_tag_proDic[word][tag]=dictionaryValue
     return(word_tag_proDic, word_tag_Dic )
-	
+
 def calTagTransitionProbability(train_confd_Tt,traintag_fd):
     '''Method to create Tag given previous tag probability
      tag_transtition_ProbDic[tag][previoustag]= dictionaryValue = freq(previous tag,tag) / freq(previous tag)
@@ -114,17 +114,17 @@ def calTagTransitionProbability(train_confd_Tt,traintag_fd):
         for t in listoftags:
             tag_transtition_Dic[a].append(t)
 
-    
+
     #Created a new dictionary tag_transtition_ProbDic which stores P(tag| previous tag) = freq(previous tag,tag) / freq(previous tag)
     tag_transtition_ProbDic= defaultdict(dict)
-    for tag,listoftag in tag_transtition_Dic.items(): 
+    for tag,listoftag in tag_transtition_Dic.items():
         for previoustag in listoftag:
                 fre_tag_and_previoustag= train_confd_Tt[tag][previoustag]
                 fre_previoustag = traintag_fd[previoustag]
-                dictionaryValue=fre_tag_and_previoustag/float(fre_previoustag)			
+                dictionaryValue=fre_tag_and_previoustag/float(fre_previoustag)
                 tag_transtition_ProbDic[tag][previoustag]=dictionaryValue
     return(tag_transtition_ProbDic)
-	
+
 def assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic, train_confd_WT):
     predictedTags = []
 
@@ -212,25 +212,25 @@ def apply_rules(predictedTags,word_tag_proDic,word_tag_Dic):
             if len(word_tag_Dic[nextword]) == 2:
                 if ((word_tag_Dic[nextword][0] == "VBN" and word_tag_Dic[nextword][1] == "VBD") or (word_tag_Dic[nextword][0] == "VBD" and word_tag_Dic[nextword][1] == "VBN")):
                     predictedTags[elem + 1][1] = "VBD"
-         
-        #RULE 3: Tagging all "the" to determiners. "All" followed by a "determiner" is predeterminer 
+
+        #RULE 3: Tagging all "the" to determiners. "All" followed by a "determiner" is predeterminer
         if(thisword == "the"):
             predictedTags[elem][1] = "DT"
             thiswordtag = predictedTags[elem][1]
-        
+
         if(thiswordtag == "DT" and previousword == "all"):
             predictedTags[elem - 1][1] = "PDT"
-		
+
         #RULE 4: Tag all the words ending with "ous" as adjectives
         if re.search(r".ous\b",thisword):
             predictedTags[elem][1] = "JJ"
-						
+
         #RULE 5: NN -> VBG if the tag of the following word is 'DT'
         if(thiswordtag == "NN" and nextwordtag == "DT"):
            predictedTags[elem][1] = "VBG"
     return(predictedTags)
     #print(predictedTags)
-  
+
 def main():
     '''
     This is the main function.
@@ -245,7 +245,7 @@ def main():
 
     #total counts of tags
     tag_frquencies = defaultdict(list)
-    traintag_fd = nltk.FreqDist(tag for (word,tag) in trainText)	
+    traintag_fd = nltk.FreqDist(tag for (word,tag) in trainText)
                 # traintag_fd.plot(cumulative=False) fun visualization not needed
 
     #create conditional table of [word] [POS] frequencies
@@ -254,35 +254,34 @@ def main():
 
     #Method to create P(word | tag) probability dictionary and output a list of all words in training set
     word_tag_proDic, word_tag_Dic = calWordTagProbability(train_confd_WT,traintag_fd)
-   
+
     #create conditional table of [POS] [POS-1] frequencies
     word_tag_pairs = nltk.bigrams(trainText)
     train_confd_Tt = nltk.ConditionalFreqDist((a[1], b[1]) for (a,b) in word_tag_pairs)
         # print(train_confd_Tt["NN"]["NN"])
 
     #Method to create P(T | T-1) probability dictionary
-    tag_transtition_ProbDic = calTagTransitionProbability(train_confd_Tt,traintag_fd)	    
+    tag_transtition_ProbDic = calTagTransitionProbability(train_confd_Tt,traintag_fd)
 
 ####
 
     # clean test file
     testText = open(sys.argv[2]).read()
     testText = cleanfile(testText)
-    
+
     #Split the file into sentences and add start tag
     test_file_sentences = nltk.sent_tokenize(testText)
     new_sentences = appendStartWord(test_file_sentences)
 
 
     predictedTags = assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic, train_confd_WT)
-    predictedTags = apply_rules(predictedTags,word_tag_proDic,word_tag_Dic) 
+    predictedTags = apply_rules(predictedTags,word_tag_proDic,word_tag_Dic)
     # new words are automatically assigned as nouns (NN)
 
-    with open("pos-test-with-tags.txt", "a+") as text_file:
-        for item in predictedTags:
-            if item[0]!='<start>':
-              text_file.write(str(item[0])+'/'+str(item[1]))
-              text_file.write(' ')
+    for item in predictedTags:
+        if item[0]!='<start>':
+          print(str(item[0])+'/'+str(item[1])+ ' ')
+
 
 
     #evaluate performance and place in overview comment

@@ -106,9 +106,6 @@ def main():
      plot_confusion_matrix(cm,label,normalize=False,title='Confusion matrix',cmap=plt.cm.Blues)
      #draw the confusion matrix
 
-     with open("pos-tagging-report.txt", "a+") as text_file:
-        text_file.write("Accuracy of tagger assigments is: "+"%s" % acc+"\n")
-
 
 if __name__ == '__main__':
     main()
