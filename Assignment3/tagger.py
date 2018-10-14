@@ -228,6 +228,7 @@ def apply_rules(predictedTags,word_tag_proDic,word_tag_Dic):
         #RULE 5: NN -> VBG if the tag of the following word is 'DT'
         if(thiswordtag == "NN" and nextwordtag == "DT"):
            predictedTags[elem][1] = "VBG"
+    return(predictedTags)
     #print(predictedTags)
   
 def main():
@@ -274,8 +275,8 @@ def main():
 
 
     predictedTags = assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic, train_confd_WT)
-    apply_rules(predictedTags,word_tag_proDic,word_tag_Dic)
-    
+    predictedTags = apply_rules(predictedTags,word_tag_proDic,word_tag_Dic)
+    print(predictedTags)  
     # new words are automatically assigned as nouns (NN)
 
 
