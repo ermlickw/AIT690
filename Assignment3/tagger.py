@@ -4,50 +4,33 @@ Billy Ermlick
 Nidhi Mehrotra
 Xiaojie Guo
 ************************************************************************************************************************************************
-Write a python program called tagger.py which will take as input a training file containing part of
-speech tagged text, and a file containing text to be part of speech tagged. Your program should implement
-the "most likely tag" baseline.
-Note that this assignment is based on problem 5.6 from page 171 of JM. For each word in the training
-data, assign it the POS tag that maximizes p(tag|word). Assume that any word found in the test data but
-not in training data (i.e. an unknown word) is an NN and find the accuracy of your most likely tagger on a
-given test file. Record that accuracy in your overview comment, and then add at least 5 rules to your
-tagger and see how those rules affect your accuracy. Make certain to also include the rules you add and
-the resulting accuracy in the overview comment as well.
-The input for this assignment is found in the files section of the web site (PA3.zip). The training data is
-pos-train.txt, and the text to be tagged is pos-test.txt. There is also a gold standard (manually
-tagged) version of the test file found in pos-test-key.txt that you will use to evaluate your tagged
-output.
-Here's an example of how your tagger.py program should be run from the command line. Note that
-your program output should go to STDOUT, so the file name used below could be anything. This program
-will learn the most likely tag from the training data, and then tag the test file based on that model.
-$ python tagger.py pos-train.txt pos-test.txt > pos-test-with-tags.txt
-Note that your tagger should not modify pos-test.txt in any way, and that the output of the program
-should make certain to handle each tagged item in the test data. You will note that in both the training
-and test data phrases are enclosed in brackets [] - those indicate phrasal boundaries, and you may ignore
-these since we don't use them in POS tagging.
-You should also write a utility program called scorer.py which will take as input your POS tagged
-output and compare it with the gold standard "key" data which I have placed in the Files section of our
-group (pos-test-key.txt). Your scorer program should report the overall accuracy of your tagging,
-and provide a confusion matrix similar to the one found on page 156 of JM. Again, this program should
-write output to STDOUT.
-The scorer program should be run as follows:
-$ python scorer.py pos-test-with-tags.txt pos-test-key.txt > pos-taggingreport.txt
+This is a python program which assigns parts of speech tags to a training file
+which maximize P(tag|word). For words which are not included in the training file,
+they are assumed to be NNself. Words which only have one part of speech in the training
+data are labeled as that part of speech in the test file. Words with multiple
+potential parts of speech which have unlabeled neighbors are tagged as their
+most likely tag in the training dataset. After this proceedure, untagged words
+with tagged neighbors were assigned based on maximizing their conditional
+probabiities. The accuracy of our model before additional POS rules were applied
+was %55.17. After the addition of the rules, our accuracy increased to 80.87%.
+
+The labeled training data is "pos-train.txt"
+The untagged test file is "pos-test.txt"
+The predicted labeled test data is "pos-test-with-tags.txt"
+The golden standard labeled test data is "pos-test-key.txt"
+The scoring file is "scorer.py"
+
+"pos-tagging-report.txt" and "tagger-log.txt" are logging and reporting files
+
+
 Note that if your accuracy is unusually low (less than the most likely tag baseline) that is a sign there is a
 significant problem in your tagger, and you should work to resolve that before submission.
 Please do not modify any of the files found in PA3.zip. If there is some unusual situation in that text,
-please ask me or the TA. Note that there are a small number of "ambiguous" tags, where two tags are
-joined with an | symbol (e.g. broker-dealer/NN|JJ). In these cases, only use the first part of speech
-tag and ignore the rest.
-You may use code as found in the official Python documentation, Learning Python, or Programming
-Python as a part of your assignments, however, this must be documented in your source code. You may
-also use NTLK.
- copy of your program source code (tagger.py and scorer.py) along with a copy of
-a script file called tagger-log.txt that you should create as follows:
-$ script tagger-log.txt
-$ time python tagger.py pos-train.txt pos-test.txt > pos-test-with-tags.txt
-$ head -100 pos-test-with-tags.txt
+please ask me or the TA.
+
+The script can be run by entering
+$  python tagger.py pos-train.txt pos-test.txt > pos-test-with-tags.txt
 $ python scorer.py pos-test-with-tags.txt pos-test-key.txt > pos-taggingreport.txt
-$ cat pos-tagging-rep
 ***************************************************************************************
 '''
 import nltk
