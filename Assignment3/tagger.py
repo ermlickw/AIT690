@@ -280,8 +280,9 @@ def main():
 
     with open("pos-test-with-tags.txt", "a+") as text_file:
         for item in predictedTags:
-	        text_file.write(item)
-	        text_file.write('\n')
+            if item[0]!='<start>':
+              text_file.write(str(item[0])+'/'+str(item[1]))
+              text_file.write(' ')
 
 
     #evaluate performance and place in overview comment
