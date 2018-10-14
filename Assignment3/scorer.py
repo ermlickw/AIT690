@@ -83,9 +83,23 @@ def main():
      goldline = cleanfile(open(sys.argv[2]).read())
      
      predicted_tag=[nltk.tag.str2tuple(t) for t in predicted.split()]
-     goldline_tag = [nltk.tag.str2tuple(t) for t in goldline.split()]
-     
-     acc=score_function(predicted_tag,goldline_tag) #compute the accuracy
+     goldline_tag = [nltk.tag.str2tuple(t) for t in goldline.split()]               
+    
+     while ('', ':') in goldline_tag:
+       goldline_tag.remove(('', ':'))
+     while ('', '') in goldline_tag:
+       goldline_tag.remove(('', ''))
+     while ('', 'NN') in goldline_tag:
+       goldline_tag.remove(('', 'NN')) 
+     while ('', 'JJ') in goldline_tag:
+       goldline_tag.remove(('', 'JJ'))   
+       
+     for i in range(len(predicted_tag)):
+        if goldline_tag[i][0][0]!=predicted_tag[i][0][0]:  #remove the unmatched words
+            goldline_tag.remove(goldline_tag[i])
+ 
+         
+     acc=score_function(predicted_tag,goldline_tag) #compute the accuracy     
      print("Accuracy of tagger assigments is: "+"%s" % acc+"\n")
      cm,label=generate_cm(predicted_tag,goldline_tag) #generate 
      
