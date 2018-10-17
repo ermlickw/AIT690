@@ -253,21 +253,12 @@ def main():
 
     predictedTags = assign_tags(new_sentences,traintag_fd,word_tag_proDic,tag_transtition_ProbDic, word_tag_Dic, train_confd_WT)
     predictedTags = apply_rules(predictedTags,word_tag_proDic,word_tag_Dic)
-    # new words are automatically assigned as nouns (NN)
-
+   
+	
+    #output 
     for item in predictedTags:
         if item[0]!='<start>':
           print(str(item[0])+'/'+str(item[1])+ ' ')
-
-
-
-    #evaluate performance and place in overview comment
-    # score_function(predictedTags)
-
-    #add manual expert rules to reassign POS tags  ---> 5.6 in NLTK book
-
-    #reevaluate performance and add to overview comment
-    # score_function(updatedpredictedTags)
 
 
 if __name__ == '__main__':
