@@ -64,19 +64,24 @@ import matplotlib.pyplot as plt
 from xml.dom.minidom import parse
 import xml.dom.minidom
 
-#def indentify_ambiguity(trainText):
- #   'This function returns a dictionary storing ambiguity words and their potential sense'
-  #  amb_word={}
-   # return amb_word
+
+def collect_training_context(new_text,k):
+    'This function collects all the k patterns of context words from train text and return a pattern list and label list'
+    word='line'
+    pattern_list=[]
+    label_list=[]
+    for id_ in new_text:
+        instance=new_text[id_]
+        for sentence in instance['context']:
+            word_token=word_tokenize(sentence)
+            if word in word_token:
+              word_index=word_token.index(word)
+              pattern_list.append(word_token[word_index-k:word_index+k])
+              label_list.append(instance['answer'])
+    return pattern_list,label_list
 
 
-def collect_training_context(trainText):
-    'This function collects all the context words from train text for each ambiguity words and return a context dictionary'
-    context={}
-    return context
-
-
-def pattern_likelyhood(context):
+def pattern_likelyhood(pattern_list,label_list):
     'This fucntion counts the patterns and compute the likelyhood'
     pattern_log={}
     return pattern_log
@@ -120,8 +125,8 @@ def main():
 	'''
     #training
     trainText = process_text(sys.argv[1])
-    context=collect_training_context(trainText)
-    pattern_log=pattern_likelyhood(context)
+    pattern_list,label_list=collect_training_context(trainText,3)
+    pattern_log=pattern_likelyhood(pattern_list,label_list)
     generate_list(pattern_log)
     
     #testing
