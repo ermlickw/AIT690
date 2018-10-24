@@ -61,6 +61,8 @@ import re
 import operator
 from collections import defaultdict
 import matplotlib.pyplot as plt
+from xml.dom.minidom import parse
+import xml.dom.minidom
 
 #def indentify_ambiguity(trainText):
  #   'This function returns a dictionary storing ambiguity words and their potential sense'
@@ -90,7 +92,21 @@ def test(testText,decision_list):
 
 def process_text(filename):
     'This function is used to transform and read the input text to the form we used'
-    new_text=''
+    DOMTree = xml.dom.minidom.parse(filename)
+    collection = DOMTree.documentElement
+    instances=collection.getElementsByTagName("instance")
+    contexts=collection.getElementsByTagName("context")
+    answers=collection.getElementsByTagName("answer")
+    new_text=defaultdict(str)
+    for i in range(len(instances)):
+        id_=instances[i].getAttribute("id")
+        new_text[id_]=defaultdict(str)
+        new_text[id_]['answer']=answers[i].getAttribute("senseid")
+        s=contexts[i].getElementsByTagName("s")
+        new_text[id_]['context']=[]
+        for j in range(len(s)):
+          try:new_text[id_]['context'].append(s[j].firstChild.data)       
+          except: None
     return new_text
 
 def process_list(decision_list):
