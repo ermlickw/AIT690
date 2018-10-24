@@ -62,13 +62,13 @@ import operator
 from collections import defaultdict
 import matplotlib.pyplot as plt
 
-def indentify_ambiguity(trainText):
-    'This function returns a dictionary storing ambiguity words and their potential sense'
-    amb_word={}
-    return amb_word
+#def indentify_ambiguity(trainText):
+ #   'This function returns a dictionary storing ambiguity words and their potential sense'
+  #  amb_word={}
+   # return amb_word
 
 
-def collect_training_context(trainText,amb_word):
+def collect_training_context(trainText):
     'This function collects all the context words from train text for each ambiguity words and return a context dictionary'
     context={}
     return context
@@ -88,8 +88,8 @@ def test(testText,decision_list):
    'This function use the decision list to do the wsd for each words in test, and generate the my-line-answers.txt'
        
 
-def process_text(text):
-    'This function is used to transform the input text to the form we used'
+def process_text(filename):
+    'This function is used to transform and read the input text to the form we used'
     new_text=''
     return new_text
 
@@ -103,15 +103,14 @@ def main():
     This is the main function.
 	'''
     #training
-    trainText = process_text(open(sys.argv[1]).read())
-    amb_word=indentify_ambiguity(trainText)
-    context=collect_training_context(amb_word,trainText)
+    trainText = process_text(sys.argv[1])
+    context=collect_training_context(trainText)
     pattern_log=pattern_likelyhood(context)
     generate_list(pattern_log)
     
     #testing
     decision_list=process_list(open(sys.argv[3]).read())    
-    testText = process_text(open(sys.argv[2]).read())
+    testText = process_text(sys.argv[2])
     test(testText,decision_list)
 
 
