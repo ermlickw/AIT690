@@ -65,8 +65,10 @@ from xml.dom.minidom import parse
 import xml.dom.minidom
 
 
-def collect_training_context(new_text,k):
+def collect_training_context(new_text,K):
     'This function collects all the k patterns of context words from train text and return a pattern list and label list'
+    'This function also extract the collocational features from all the patterns'
+    'six features are：-1W,+1W,+1W+2W,-1W-2W,+kW,-kW)'
     word='line'
     pattern_list=[]
     label_list=[]
@@ -75,10 +77,51 @@ def collect_training_context(new_text,k):
         for sentence in instance['context']:
             word_token=word_tokenize(sentence)
             if word in word_token:
-              word_index=word_token.index(word)
-              pattern_list.append(word_token[word_index-k:word_index+k])
+              #word_index=word_token.index(word)
+              pattern_list.append(word_token)
               label_list.append(instance['answer'])
-    return pattern_list,label_list
+
+    f_1W=[]
+    f_W1=[]
+    f_1W2W=[]
+    f_W1W2=[]
+    f_KW=[]
+    f_WK=[]
+    f_1W_label=[]
+    f_W1_label=[]
+    f_1W2W_label=[]
+    f_W1W2_label=[]
+    f_KW_label=[]
+    f_WK_label=[]
+    for pattern in pattern_list:
+         idx=pattern_list.index(pattern)
+         index=pattern.index(word)
+         try:
+             f_1W.append(pattern[index-1:index+1])
+             f_1W_label.append(label_list[idx])
+         except: None
+         try:
+             f_W1.append(pattern[index:index+2])
+             f_W1_label.append(label_list[idx])
+         except: None
+         try:
+             f_1W2W.append(pattern[index-2:index+1])
+             f_1W2W_label.append(label_list[idx])
+         except: None    
+         try:
+             f_W1W2.append(pattern[index:index+3])
+             f_W1W2_label.append(label_list[idx])
+         except: None    
+         try:
+             f_WK.append(pattern[index+K])
+             f_WK_label.append(label_list[idx])
+         except: None
+         try:
+             f_KW.append(pattern[index-K])
+             f_KW_label.append(label_list[idx])
+         except: None
+         return f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK,f_1W_label,f_W1_label,f_1W2W_label,f_W1W2_label,f_KW_label,f_WK_label
+
 
 
 def pattern_likelyhood(pattern_list,label_list):
