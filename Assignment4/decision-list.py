@@ -81,45 +81,80 @@ def collect_training_context(new_text,K):
               pattern_list.append(word_token)
               label_list.append(instance['answer'])
 
-    f_1W=[]
-    f_W1=[]
-    f_1W2W=[]
-    f_W1W2=[]
-    f_KW=[]
-    f_WK=[]
-    f_1W_label=[]
-    f_W1_label=[]
-    f_1W2W_label=[]
-    f_W1W2_label=[]
-    f_KW_label=[]
-    f_WK_label=[]
+    f_1W=defaultdict(str)
+    f_W1=defaultdict(str)
+    f_1W2W=defaultdict(str)
+    f_W1W2=defaultdict(str)
+    f_KW=defaultdict(str)
+    f_WK=defaultdict(str)
+    f_1W_label=defaultdict(str)
+    f_W1_label=defaultdict(str)
+    f_1W2W_label=defaultdict(str)
+    f_W1W2_label=defaultdict(str)
+    f_KW_label=defaultdict(str)
+    f_WK_label=defaultdict(str)
     for pattern in pattern_list:
          idx=pattern_list.index(pattern)
          index=pattern.index(word)
          try:
-             f_1W.append(pattern[index-1:index+1])
-             f_1W_label.append(label_list[idx])
+             if str(pattern[index-1:index+1]) in f_1W:
+                 f_1W[str(pattern[index-1:index+1])]+=1
+             else:
+                 f_1W[str(pattern[index-1:index+1])]=0
+                 f_1W[str(pattern[index-1:index+1])]+=1
+             if str(pattern[index-1:index+1]) not in f_1W_label:
+                 f_1W_label[str(pattern[index-1:index+1])]=label_list[idx]
          except: None
+         
          try:
-             f_W1.append(pattern[index:index+2])
-             f_W1_label.append(label_list[idx])
+             if str(pattern[index:index+2]) in f_W1:
+                 f_W1[str(pattern[index:index+2])]+=1
+             else:
+                 f_W1[str(pattern[index:index+2])]=0
+                 f_W1[str(pattern[index:index+2])]+=1
+             if str(pattern[index:index+2]) not in f_W1_label:
+                 f_W1_label[str(pattern[index:index+2])]=label_list[idx]
          except: None
+          
          try:
-             f_1W2W.append(pattern[index-2:index+1])
-             f_1W2W_label.append(label_list[idx])
-         except: None    
-         try:
-             f_W1W2.append(pattern[index:index+3])
-             f_W1W2_label.append(label_list[idx])
-         except: None    
-         try:
-             f_WK.append(pattern[index+K])
-             f_WK_label.append(label_list[idx])
+             if str(pattern[index-2:index+1]) in f_1W2W:
+                 f_1W2W[str(pattern[index-2:index+1])]+=1
+             else:
+                 f_1W2W[str(pattern[index-2:index+1])]=0
+                 f_1W2W[str(pattern[index-2:index+1])]+=1
+             if str(pattern[index-2:index+1]) not in f_1W2W_label:
+                 f_1W2W_label[str(pattern[index-2:index+1])]=label_list[idx]
          except: None
+         
          try:
-             f_KW.append(pattern[index-K])
-             f_KW_label.append(label_list[idx])
-         except: None
+             if str(pattern[index:index+3]) in f_W1W2:
+                 f_W1W2[str(pattern[index:index+3])]+=1
+             else:
+                 f_W1W2[str(pattern[index:index+3])]=0
+                 f_W1W2[str(pattern[index:index+3])]+=1
+             if str(pattern[index:index+3]) not in f_W1W2_label:
+                 f_W1W2_label[str(pattern[index:index+3])]=label_list[idx]
+         except: None         
+         
+         try:
+             if str(pattern[index+K]) in f_WK:
+                 f_WK[str(pattern[index+K])]+=1
+             else:
+                 f_WK[str(pattern[index+K])]=0
+                 f_WK[str(pattern[index+K])]+=1
+             if str(pattern[index+K]) not in f_WK_label:
+                 f_WK_label[str(pattern[index+K])]=label_list[idx]
+         except: None   
+           
+         try:
+             if str(pattern[index-K]) in f_KW:
+                 f_KW[str(pattern[index-K])]+=1
+             else:
+                 f_KW[str(pattern[index-K])]=0
+                 f_KW[str(pattern[index-K])]+=1
+             if str(pattern[index-K]) not in f_KW_label:
+                 f_KW_label[str(pattern[index-K])]=label_list[idx]
+         except: None   
          return f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK,f_1W_label,f_W1_label,f_1W2W_label,f_W1W2_label,f_KW_label,f_WK_label
 
 
