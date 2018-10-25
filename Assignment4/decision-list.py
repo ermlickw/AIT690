@@ -52,9 +52,6 @@ $ python scorer.py my-line-answers.txt line-answers.txt
 $ exit
 ***************************************************************************************
 '''
-
-
-
 import nltk
 import sys
 import re
@@ -63,6 +60,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 from xml.dom.minidom import parse
 import xml.dom.minidom
+from nltk.tokenize import word_tokenize
 
 
 def collect_training_context(new_text,K):
@@ -75,93 +73,92 @@ def collect_training_context(new_text,K):
     for id_ in new_text:
         instance=new_text[id_]
         for sentence in instance['context']:
+            sentence=sentence.replace('lines','line')
             word_token=word_tokenize(sentence)
             if word in word_token:
               #word_index=word_token.index(word)
               pattern_list.append(word_token)
               label_list.append(instance['answer'])
-
+              
+    labels=list(set(label_list))#find the different label types
+    
     f_1W=defaultdict(str)
     f_W1=defaultdict(str)
     f_1W2W=defaultdict(str)
     f_W1W2=defaultdict(str)
     f_KW=defaultdict(str)
     f_WK=defaultdict(str)
-    f_1W_label=defaultdict(str)
-    f_W1_label=defaultdict(str)
-    f_1W2W_label=defaultdict(str)
-    f_W1W2_label=defaultdict(str)
-    f_KW_label=defaultdict(str)
-    f_WK_label=defaultdict(str)
+
     for pattern in pattern_list:
          idx=pattern_list.index(pattern)
          index=pattern.index(word)
          try:
              if str(pattern[index-1:index+1]) in f_1W:
-                 f_1W[str(pattern[index-1:index+1])]+=1
+                 f_1W[str(pattern[index-1:index+1])][label_list[idx]]+=1
              else:
-                 f_1W[str(pattern[index-1:index+1])]=0
-                 f_1W[str(pattern[index-1:index+1])]+=1
-             if str(pattern[index-1:index+1]) not in f_1W_label:
-                 f_1W_label[str(pattern[index-1:index+1])]=label_list[idx]
+                 f_1W[str(pattern[index-1:index+1])]=defaultdict(str)
+                 for l in labels:
+                   f_1W[str(pattern[index-1:index+1])][l]=0
+                 f_1W[str(pattern[index-1:index+1])][label_list[idx]]+=1
          except: None
          
          try:
              if str(pattern[index:index+2]) in f_W1:
                  f_W1[str(pattern[index:index+2])]+=1
              else:
-                 f_W1[str(pattern[index:index+2])]=0
-                 f_W1[str(pattern[index:index+2])]+=1
-             if str(pattern[index:index+2]) not in f_W1_label:
-                 f_W1_label[str(pattern[index:index+2])]=label_list[idx]
+                 f_W1[str(pattern[index:index+2])]=defaultdict(str)
+                 for l in labels:
+                   f_W1[str(pattern[index:index+2])][l]=0
+                 f_W1[str(pattern[index:index+2])][label_list[idx]]+=1
          except: None
           
          try:
              if str(pattern[index-2:index+1]) in f_1W2W:
                  f_1W2W[str(pattern[index-2:index+1])]+=1
              else:
-                 f_1W2W[str(pattern[index-2:index+1])]=0
-                 f_1W2W[str(pattern[index-2:index+1])]+=1
-             if str(pattern[index-2:index+1]) not in f_1W2W_label:
-                 f_1W2W_label[str(pattern[index-2:index+1])]=label_list[idx]
+                 f_1W2W[str(pattern[index-2:index+1])]=defaultdict(str)
+                 for l in labels:
+                   f_1W2W[str(pattern[index-2:index+1])][l]=0
+                 f_1W2W[str(pattern[index-2:index+1])][label_list[idx]]+=1
          except: None
          
          try:
              if str(pattern[index:index+3]) in f_W1W2:
                  f_W1W2[str(pattern[index:index+3])]+=1
              else:
-                 f_W1W2[str(pattern[index:index+3])]=0
-                 f_W1W2[str(pattern[index:index+3])]+=1
-             if str(pattern[index:index+3]) not in f_W1W2_label:
-                 f_W1W2_label[str(pattern[index:index+3])]=label_list[idx]
+                 f_W1W2[str(pattern[index:index+3])]=defaultdict(str)
+                 for l in labels:
+                   f_W1W2[str(pattern[index:index+3])][l]=0
+                 f_W1W2[str(pattern[index:index+3])][label_list[idx]]+=1
          except: None         
          
          try:
              if str(pattern[index+K]) in f_WK:
                  f_WK[str(pattern[index+K])]+=1
              else:
-                 f_WK[str(pattern[index+K])]=0
-                 f_WK[str(pattern[index+K])]+=1
-             if str(pattern[index+K]) not in f_WK_label:
-                 f_WK_label[str(pattern[index+K])]=label_list[idx]
+                 f_WK[str(pattern[index+K])]=defaultdict(str)
+                 for l in labels:
+                   f_WK[str(pattern[index+K])][l]=0
+                 f_WK[str(pattern[index+K])][label_list[idx]]+=1
          except: None   
            
          try:
              if str(pattern[index-K]) in f_KW:
                  f_KW[str(pattern[index-K])]+=1
              else:
-                 f_KW[str(pattern[index-K])]=0
-                 f_KW[str(pattern[index-K])]+=1
-             if str(pattern[index-K]) not in f_KW_label:
-                 f_KW_label[str(pattern[index-K])]=label_list[idx]
+                 f_KW[str(pattern[index-K])]=defaultdict(str)
+                 for l in labels:
+                   f_KW[str(pattern[index-K])][l]=0
+                 f_KW[str(pattern[index-K])][label_list[idx]]+=1
          except: None   
-         return f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK,f_1W_label,f_W1_label,f_1W2W_label,f_W1W2_label,f_KW_label,f_WK_label
-
-
-
-def pattern_likelyhood(pattern_list,label_list):
+         
+         return f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK
+     
+def pattern_likelyhood(context):
     'This fucntion counts the patterns and compute the likelyhood'
-    pattern_log={}
+    pattern_log=defaultdict(str)
+    for pattern in f_1W:
+        pattern_log[pattern]=f_1W[pattern]/
     return pattern_log
 
 
@@ -174,7 +171,8 @@ def test(testText,decision_list):
        
 
 def process_text(filename):
-    'This function is used to transform and read the input text to the form we used'
+    'This function is used to read and transform the input text to the form we used'
+    'Each item is an instance, each instance has a answer sense and some sentences'
     DOMTree = xml.dom.minidom.parse(filename)
     collection = DOMTree.documentElement
     instances=collection.getElementsByTagName("instance")
@@ -188,13 +186,15 @@ def process_text(filename):
         s=contexts[i].getElementsByTagName("s")
         new_text[id_]['context']=[]
         for j in range(len(s)):
-          try:new_text[id_]['context'].append(s[j].firstChild.data)       
-          except: None
+            if_word=s[j].getElementsByTagName("head")
+            if if_word!=[] and if_word[0].firstChild.data in ['line','lines']:
+              new_text[id_]['context'].append(s[j].childNodes[0].data+'line'+s[j].childNodes[2].data)       
     return new_text
 
 def process_list(decision_list):
     'This function is used to transform the input decision list to what we need'
-    new_list={}
+    new_list=defaultdict(str)
+    
     return new_list
 
 def main():
@@ -203,12 +203,12 @@ def main():
 	'''
     #training
     trainText = process_text(sys.argv[1])
-    pattern_list,label_list=collect_training_context(trainText,3)
-    pattern_log=pattern_likelyhood(pattern_list,label_list)
+    context=collect_training_context(amb_word,trainText)
+    pattern_log=pattern_likelyhood(context)
     generate_list(pattern_log)
     
     #testing
-    decision_list=process_list(open(sys.argv[3]).read())    
+    decision_list=process_list(sys.argv[3])    
     testText = process_text(sys.argv[2])
     test(testText,decision_list)
 
