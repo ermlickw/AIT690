@@ -61,6 +61,30 @@ import matplotlib.pyplot as plt
 from xml.dom.minidom import parse
 import xml.dom.minidom
 from nltk.tokenize import word_tokenize
+import math
+
+
+
+def process_train_text(filename):
+    'This function is used to read and transform the input text to the form we used'
+    'Each item is an instance, each instance has a answer sense and some sentences'
+    DOMTree = xml.dom.minidom.parse(filename)
+    collection = DOMTree.documentElement
+    instances=collection.getElementsByTagName("instance")
+    contexts=collection.getElementsByTagName("context")
+    answers=collection.getElementsByTagName("answer")
+    new_text=defaultdict(str)
+    for i in range(len(instances)):
+        id_=instances[i].getAttribute("id")
+        new_text[id_]=defaultdict(str)
+        new_text[id_]['answer']=answers[i].getAttribute("senseid")
+        s=contexts[i].getElementsByTagName("s")
+        new_text[id_]['context']=[]
+        for j in range(len(s)):
+            if_word=s[j].getElementsByTagName("head")
+            if if_word!=[] and if_word[0].firstChild.data in ['line','lines']:
+              new_text[id_]['context'].append(s[j].childNodes[0].data+'line'+s[j].childNodes[2].data)       
+    return new_text
 
 
 def collect_training_context(new_text,K):
@@ -93,124 +117,124 @@ def collect_training_context(new_text,K):
          idx=pattern_list.index(pattern)
          index=pattern.index(word)
          try:
-             if str(pattern[index-1:index+1]) in f_1W:
-                 f_1W[str(pattern[index-1:index+1])][label_list[idx]]+=1
+             if ' '.join(pattern[index-1:index+1]) in f_1W:
+                 f_1W[' '.join(pattern[index-1:index+1])][label_list[idx]]+=1
              else:
-                 f_1W[str(pattern[index-1:index+1])]=defaultdict(str)
+                 f_1W[' '.join(pattern[index-1:index+1])]=defaultdict(str)
                  for l in labels:
-                   f_1W[str(pattern[index-1:index+1])][l]=0
-                 f_1W[str(pattern[index-1:index+1])][label_list[idx]]+=1
+                   f_1W[' '.join(pattern[index-1:index+1])][l]=0.1
+                 f_1W[' '.join(pattern[index-1:index+1])][label_list[idx]]+=1
          except: None
          
          try:
-             if str(pattern[index:index+2]) in f_W1:
-                 f_W1[str(pattern[index:index+2])]+=1
+             if ' '.join(pattern[index:index+2]) in f_W1:
+                 f_W1[' '.join(pattern[index:index+2])]+=1
              else:
-                 f_W1[str(pattern[index:index+2])]=defaultdict(str)
+                 f_W1[' '.join(pattern[index:index+2])]=defaultdict(str)
                  for l in labels:
-                   f_W1[str(pattern[index:index+2])][l]=0
-                 f_W1[str(pattern[index:index+2])][label_list[idx]]+=1
+                   f_W1[' '.join(pattern[index:index+2])][l]=0.1
+                 f_W1[' '.join(pattern[index:index+2])][label_list[idx]]+=1
          except: None
           
          try:
-             if str(pattern[index-2:index+1]) in f_1W2W:
-                 f_1W2W[str(pattern[index-2:index+1])]+=1
+             if ' '.join(pattern[index-2:index+1]) in f_1W2W:
+                 f_1W2W[' '.join(pattern[index-2:index+1])]+=1
              else:
-                 f_1W2W[str(pattern[index-2:index+1])]=defaultdict(str)
+                 f_1W2W[' '.join(pattern[index-2:index+1])]=defaultdict(str)
                  for l in labels:
-                   f_1W2W[str(pattern[index-2:index+1])][l]=0
-                 f_1W2W[str(pattern[index-2:index+1])][label_list[idx]]+=1
+                   f_1W2W[' '.join(pattern[index-2:index+1])][l]=0.1
+                 f_1W2W[' '.join(pattern[index-2:index+1])][label_list[idx]]+=1
          except: None
          
          try:
-             if str(pattern[index:index+3]) in f_W1W2:
-                 f_W1W2[str(pattern[index:index+3])]+=1
+             if ' '.join(pattern[index:index+3]) in f_W1W2:
+                 f_W1W2[' '.join(pattern[index:index+3])]+=1
              else:
-                 f_W1W2[str(pattern[index:index+3])]=defaultdict(str)
+                 f_W1W2[' '.join(pattern[index:index+3])]=defaultdict(str)
                  for l in labels:
-                   f_W1W2[str(pattern[index:index+3])][l]=0
-                 f_W1W2[str(pattern[index:index+3])][label_list[idx]]+=1
+                   f_W1W2[' '.join(pattern[index:index+3])][l]=0.1
+                 f_W1W2[' '.join(pattern[index:index+3])][label_list[idx]]+=1
          except: None         
          
          try:
-             if str(pattern[index+K]) in f_WK:
-                 f_WK[str(pattern[index+K])]+=1
+             if ' '.join(pattern[index+K]) in f_WK:
+                 f_WK['line_'+''.join(pattern[index+K])]+=1
              else:
-                 f_WK[str(pattern[index+K])]=defaultdict(str)
+                 f_WK['line_'+''.join(pattern[index+K])]=defaultdict(str)
                  for l in labels:
-                   f_WK[str(pattern[index+K])][l]=0
-                 f_WK[str(pattern[index+K])][label_list[idx]]+=1
+                   f_WK['line_'+''.join(pattern[index+K])][l]=0.1
+                 f_WK['line_'+''.join(pattern[index+K])][label_list[idx]]+=1
          except: None   
            
          try:
-             if str(pattern[index-K]) in f_KW:
-                 f_KW[str(pattern[index-K])]+=1
+             if ' '.join(pattern[index-K])+'_line' in f_KW:
+                 f_KW[''.join(pattern[index-K])+'_line']+=1
              else:
-                 f_KW[str(pattern[index-K])]=defaultdict(str)
+                 f_KW[''.join(pattern[index-K])+'_line']=defaultdict(str)
                  for l in labels:
-                   f_KW[str(pattern[index-K])][l]=0
-                 f_KW[str(pattern[index-K])][label_list[idx]]+=1
+                   f_KW[''.join(pattern[index-K])+'_line'][l]=0.1
+                 f_KW[''.join(pattern[index-K])+'_line'][label_list[idx]]+=1
          except: None   
          
-         return f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK
+         return f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK,labels
      
-def pattern_likelyhood(context):
-    'This fucntion counts the patterns and compute the likelyhood'
+     
+def pattern_likelyhood(f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK,labels):
+    'This fucntion counts the patterns and compute the likelyhood of each pattern as well as the label infered by this pattern'
     pattern_log=defaultdict(str)
-    for pattern in f_1W:
-        pattern_log[pattern]=f_1W[pattern]/
+    feature_name=[f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK]
+    for feature in feature_name:
+      for pattern in feature:
+         pattern_log[pattern]=defaultdict(str)
+         log_list=[feature[pattern][labels[0]],feature[pattern][labels[1]]]
+         label_idx=log_list.index(max(log_list)) #find the infered label from this pattern
+         pattern_log[pattern]['value']=abs(math.log(feature[pattern][labels[0]]/feature[pattern][labels[1]]))
+         pattern_log[pattern]['label']=labels[label_idx]
     return pattern_log
 
 
 def generate_list(pattern_log):
-    'This function generate the my-decision-list.txt'
+    'This function generate the my-decision-list.txt based on the strongest pattern'
+    'The txt form is ---pattern/label/log-score----'
+    log_list=[]
+    pattern_list=[]
+    sorted_pattern=[]
+    for pattern in pattern_log:
+        log_list.append(pattern_log[pattern]['value'])
+        pattern_list.append(pattern)
+    for i in range(len(log_list)):
+        idx=log_list.index(max(log_list))
+        sorted_pattern.append(pattern_list[idx])
+        if log_list[idx]>2.4:
+          with open("my-decision-list.txt", "a+") as text_file:
+             text_file.write(pattern_list[idx]+"\\"+pattern_log[pattern_list[idx]]['label']+'\\'+str(pattern_log[pattern_list[idx]]['value'])+'\n')
+          del log_list[idx]
+          del pattern_list[idx]
+        else: break
+        
+
+def process_test_text(filename):
+    'This function input and tranform the test file into desired format'
     
     
-def test(testText,decision_list):
+def test(testText,filename):
    'This function use the decision list to do the wsd for each words in test, and generate the my-line-answers.txt'
-       
-
-def process_text(filename):
-    'This function is used to read and transform the input text to the form we used'
-    'Each item is an instance, each instance has a answer sense and some sentences'
-    DOMTree = xml.dom.minidom.parse(filename)
-    collection = DOMTree.documentElement
-    instances=collection.getElementsByTagName("instance")
-    contexts=collection.getElementsByTagName("context")
-    answers=collection.getElementsByTagName("answer")
-    new_text=defaultdict(str)
-    for i in range(len(instances)):
-        id_=instances[i].getAttribute("id")
-        new_text[id_]=defaultdict(str)
-        new_text[id_]['answer']=answers[i].getAttribute("senseid")
-        s=contexts[i].getElementsByTagName("s")
-        new_text[id_]['context']=[]
-        for j in range(len(s)):
-            if_word=s[j].getElementsByTagName("head")
-            if if_word!=[] and if_word[0].firstChild.data in ['line','lines']:
-              new_text[id_]['context'].append(s[j].childNodes[0].data+'line'+s[j].childNodes[2].data)       
-    return new_text
-
-def process_list(decision_list):
-    'This function is used to transform the input decision list to what we need'
-    new_list=defaultdict(str)
     
-    return new_list
-
+   
+   
 def main():
     '''
     This is the main function.
 	'''
     #training
-    trainText = process_text(sys.argv[1])
-    context=collect_training_context(amb_word,trainText)
-    pattern_log=pattern_likelyhood(context)
+    trainText = process_train_text(sys.argv[1])
+    f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK,labels=collect_training_context(trainText,3)
+    pattern_log=pattern_likelyhood(f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK,labels)
     generate_list(pattern_log)
     
-    #testing
-    decision_list=process_list(sys.argv[3])    
-    testText = process_text(sys.argv[2])
-    test(testText,decision_list)
+    #testing   
+    testText = process_test_text(sys.argv[2])
+    test(testText,sys.argv[3])
 
 
 if __name__ == '__main__':
