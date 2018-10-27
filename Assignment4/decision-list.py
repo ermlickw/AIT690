@@ -4,6 +4,13 @@ Billy Ermlick
 Nidhi Mehrotra
 Xiaojie Guo
 ************************************************************************************************************************************************
+
+python decision-list.py line-train.xml line-test.xml my-line-answer.txt
+
+************************************************************************************************************************************************
+
+
+
 Write a Python program called decision-list.py that implements a decision list classifier to
 perform word sense disambiguation. This method is described on pages 641-644 of the JM text. You
 should also read the original paper about this method, which is available on BlackBoard (YarowskyDecision-List-1994.pdf).
@@ -264,16 +271,16 @@ def assign_test_senses(testText,pattern_log):
     for id, dictdef in testText.items():
 
         for keywords, values in pattern_log:
-            print(keywords)
-            print(dict(dictdef)['context'][0])
+            # print(keywords)
+            # print(dict(dictdef)['context'][0])
 
             if re.search(keywords.lower(), str(dict(dictdef)['context'][0]).lower()):
-                print("gotit")
+                # print("gotit")
                 testText[id]['answer'] = values['label']
                 break
-            print(" ")
+            # print(" ")
             testText[id]['answer'] = 'guess'
-
+##just for assignment verification
     i=0
     j=0
     for item,de in testText.items():
