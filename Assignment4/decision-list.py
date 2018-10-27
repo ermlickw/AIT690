@@ -230,13 +230,6 @@ def generate_list(pattern_log):
 
 def process_test_text(filename):
     'This function input and tranform the test file into desired format'
-
-
-def test(testText,filename):
-   'This function use the decision list to do the wsd for each words in test, and generate the my-line-answers.txt'
-
-def process_test_text(filename):
-    'This function input and tranform the test file into desired format'
     'This function is used to read and transform the input text into a usable form'
     'Each item is an instance, each instance has a answer sense and some sentences'
     #collect xml dom structure components
@@ -275,17 +268,26 @@ def assign_test_senses(testText,pattern_log):
                 # print(dict(dictdef)['context'][0])
                 testText[id]['answer'] = values['label']
                 break
-            testText[id]['answer'] = 'line'
+            testText[id]['answer'] = 'guess'
+    return testText
+    # i=0
+    # j=0
+    # for item,de in testText.items():
+    #     i=i+1
+    #     if de['answer'] == 'guess':
+    #         j=j+1
+    # print(j)
+    # print(i)
+    # print(j/i)
 
-    i=0
-    j=0
-    for item,de in testText.items():
-        i=i+1
-        if de['answer'] == 'line':
-            j=j+1
-    print(j)
-    print(i)
-    print(j/i)
+
+def test(testText,filename):
+   'This function use the decision list to do the wsd for each words in test, and generate the my-line-answers.txt'
+   with open(filename, "a+") as text_file:
+       for id, dictdef in testText.items():
+           text_file.write(id + "           \\        "+ dictdef['answer']+'   \n')
+
+
 
 def main():
     '''
