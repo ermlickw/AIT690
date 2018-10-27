@@ -66,14 +66,16 @@ import math
 
 
 def process_train_text(filename):
-    'This function is used to read and transform the input text to the form we used'
+    'This function is used to read and transform the input text into a usable form'
     'Each item is an instance, each instance has a answer sense and some sentences'
+    #collect xml dom structure components
     DOMTree = xml.dom.minidom.parse(filename)
     collection = DOMTree.documentElement
     instances=collection.getElementsByTagName("instance")
     contexts=collection.getElementsByTagName("context")
     answers=collection.getElementsByTagName("answer")
-    new_text=defaultdict(str)
+    new_text=defaultdict(str) #craete otuput dictionary
+    #assign dom elements to "newtext" dictionary containing context and answers
     for i in range(len(instances)):
         id_=instances[i].getAttribute("id")
         new_text[id_]=defaultdict(str)
@@ -83,7 +85,7 @@ def process_train_text(filename):
         for j in range(len(s)):
             if_word=s[j].getElementsByTagName("head")
             if if_word!=[] and if_word[0].firstChild.data in ['line','lines']:
-              new_text[id_]['context'].append(s[j].childNodes[0].data+'line'+s[j].childNodes[2].data)       
+              new_text[id_]['context'].append(s[j].childNodes[0].data+'line'+s[j].childNodes[2].data)
     return new_text
 
 
@@ -91,9 +93,9 @@ def collect_training_context(new_text,K):
     'This function collects all the k patterns of context words from train text and return a pattern list and label list'
     'This function also extract the collocational features from all the patterns'
     'six features are：-1W,+1W,+1W+2W,-1W-2W,+kW,-kW)'
-    word='line'
-    pattern_list=[]
-    label_list=[]
+    word='line' #target word
+    pattern_list=[] #list of sentences with all words in conext including target word
+    label_list=[] #list of sentences with tagged sense
     for id_ in new_text:
         instance=new_text[id_]
         for sentence in instance['context']:
@@ -103,59 +105,67 @@ def collect_training_context(new_text,K):
               #word_index=word_token.index(word)
               pattern_list.append(word_token)
               label_list.append(instance['answer'])
-              
-    labels=list(set(label_list))#find the different label types
-    
-    f_1W=defaultdict(str)
-    f_W1=defaultdict(str)
-    f_1W2W=defaultdict(str)
-    f_W1W2=defaultdict(str)
-    f_KW=defaultdict(str)
-    f_WK=defaultdict(str)
 
-    for pattern in pattern_list:
-         idx=pattern_list.index(pattern)
-         index=pattern.index(word)
+    labels=list(set(label_list))#find all possible senses
+
+    #create Yarowsky's decision features
+    f_1W=defaultdict(str) # -1word from target
+    f_W1=defaultdict(str)# +1word from target
+    f_1W2W=defaultdict(str)# -1 and -2 words from target
+    f_W1W2=defaultdict(str)# +1 and +2 words from target
+    f_KW=defaultdict(str)# -K words from target
+    f_WK=defaultdict(str)# +K words from target
+
+    #gather frequency that each pattern occurs in training data with given accent:
+    for pattern in pattern_list: #for each sentence
+         idx=pattern_list.index(pattern) #sentence id
+         index=pattern.index(word) # id for target word in sentence
+
+
+         #assign to -1word feature frequency
          try:
-             if ' '.join(pattern[index-1:index+1]) in f_1W:
+             if ' '.join(pattern[index-1:index+1]) in f_1W: # if -1word, target word is already stored, add 1 to freq
                  f_1W[' '.join(pattern[index-1:index+1])][label_list[idx]]+=1
              else:
-                 f_1W[' '.join(pattern[index-1:index+1])]=defaultdict(str)
+                 f_1W[' '.join(pattern[index-1:index+1])]=defaultdict(str) #else store that entry
                  for l in labels:
-                   f_1W[' '.join(pattern[index-1:index+1])][l]=0.1
-                 f_1W[' '.join(pattern[index-1:index+1])][label_list[idx]]+=1
+                     f_1W[' '.join(pattern[index-1:index+1])][l]=0.1 # set all possible senese to 0.1 for smoothing
+                 f_1W[' '.join(pattern[index-1:index+1])][label_list[idx]]+=1 #add 1 to freqency
          except: None
-         
+         #assign to +1word feature frequency
          try:
              if ' '.join(pattern[index:index+2]) in f_W1:
                  f_W1[' '.join(pattern[index:index+2])]+=1
              else:
                  f_W1[' '.join(pattern[index:index+2])]=defaultdict(str)
                  for l in labels:
-                   f_W1[' '.join(pattern[index:index+2])][l]=0.1
+                     f_W1[' '.join(pattern[index:index+2])][l]=0.1
                  f_W1[' '.join(pattern[index:index+2])][label_list[idx]]+=1
          except: None
-          
+
+         #assign to -1word, -2word feature frequency
          try:
              if ' '.join(pattern[index-2:index+1]) in f_1W2W:
                  f_1W2W[' '.join(pattern[index-2:index+1])]+=1
              else:
                  f_1W2W[' '.join(pattern[index-2:index+1])]=defaultdict(str)
                  for l in labels:
-                   f_1W2W[' '.join(pattern[index-2:index+1])][l]=0.1
+                     f_1W2W[' '.join(pattern[index-2:index+1])][l]=0.1
                  f_1W2W[' '.join(pattern[index-2:index+1])][label_list[idx]]+=1
          except: None
-         
+
+         #assign to +1word, +2word feature frequency
          try:
              if ' '.join(pattern[index:index+3]) in f_W1W2:
                  f_W1W2[' '.join(pattern[index:index+3])]+=1
              else:
                  f_W1W2[' '.join(pattern[index:index+3])]=defaultdict(str)
                  for l in labels:
-                   f_W1W2[' '.join(pattern[index:index+3])][l]=0.1
+                     f_W1W2[' '.join(pattern[index:index+3])][l]=0.1
                  f_W1W2[' '.join(pattern[index:index+3])][label_list[idx]]+=1
-         except: None         
-         
+         except: None
+
+         #assign to -K word feature frequency
          try:
              if ' '.join(pattern[index+K]) in f_WK:
                  f_WK['line_'+''.join(pattern[index+K])]+=1
@@ -164,38 +174,42 @@ def collect_training_context(new_text,K):
                  for l in labels:
                    f_WK['line_'+''.join(pattern[index+K])][l]=0.1
                  f_WK['line_'+''.join(pattern[index+K])][label_list[idx]]+=1
-         except: None   
-           
+         except: None
+
+         #assign to +K word feature frequency
          try:
              if ' '.join(pattern[index-K])+'_line' in f_KW:
                  f_KW[''.join(pattern[index-K])+'_line']+=1
              else:
                  f_KW[''.join(pattern[index-K])+'_line']=defaultdict(str)
                  for l in labels:
-                   f_KW[''.join(pattern[index-K])+'_line'][l]=0.1
+                     f_KW[''.join(pattern[index-K])+'_line'][l]=0.1
                  f_KW[''.join(pattern[index-K])+'_line'][label_list[idx]]+=1
-         except: None   
-         
+         except: None
+
          return f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK,labels
-     
-     
+
+
 def pattern_likelyhood(f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK,labels):
     'This fucntion counts the patterns and compute the likelyhood of each pattern as well as the label infered by this pattern'
     pattern_log=defaultdict(str)
     feature_name=[f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK]
-    for feature in feature_name:
-      for pattern in feature:
+    print(labels)
+    for feature in feature_name: #for each feature
+      for pattern in feature: #for each sentence
          pattern_log[pattern]=defaultdict(str)
          log_list=[feature[pattern][labels[0]],feature[pattern][labels[1]]]
          label_idx=log_list.index(max(log_list)) #find the infered label from this pattern
-         pattern_log[pattern]['value']=abs(math.log(feature[pattern][labels[0]]/feature[pattern][labels[1]]))
-         pattern_log[pattern]['label']=labels[label_idx]
+         pattern_log[pattern]['value']=abs(math.log(feature[pattern][labels[0]]/feature[pattern][labels[1]])) #assign the conditional probability ratio
+         pattern_log[pattern]['label']=labels[label_idx] #assign the label
     return pattern_log
 
 
 def generate_list(pattern_log):
-    'This function generate the my-decision-list.txt based on the strongest pattern'
-    'The txt form is ---pattern/label/log-score----'
+    '''This function generate the my-decision-list.txt based on the strongest pattern
+    The txt form is ---pattern/label/log-score----
+    This will be used when assigning values to test case
+    '''
     log_list=[]
     pattern_list=[]
     sorted_pattern=[]
@@ -211,17 +225,17 @@ def generate_list(pattern_log):
           del log_list[idx]
           del pattern_list[idx]
         else: break
-        
+
 
 def process_test_text(filename):
     'This function input and tranform the test file into desired format'
-    
-    
+
+
 def test(testText,filename):
    'This function use the decision list to do the wsd for each words in test, and generate the my-line-answers.txt'
-    
-   
-   
+
+
+
 def main():
     '''
     This is the main function.
@@ -231,8 +245,8 @@ def main():
     f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK,labels=collect_training_context(trainText,3)
     pattern_log=pattern_likelyhood(f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK,labels)
     generate_list(pattern_log)
-    
-    #testing   
+
+    #testing
     testText = process_test_text(sys.argv[2])
     test(testText,sys.argv[3])
 
