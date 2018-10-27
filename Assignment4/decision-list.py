@@ -257,29 +257,34 @@ def assign_test_senses(testText,pattern_log):
     #convert pattern log to dictionary of dictionaries and sort in descending value
     pattern = dict()
     for entry, dictdef in pattern_log.items():
-        if dict(dictdef)['value'] >2.4:
+        if dict(dictdef)['value'] >2.3979:
             pattern[entry] = dict(dictdef)
     pattern_log = sorted(dict(pattern).items(), key=lambda k: float(k[1]['value']), reverse=True)
     # print(pattern_log)
     for id, dictdef in testText.items():
-        # print(dict(dictdef)['context'])
+
         for keywords, values in pattern_log:
-            if re.search(keywords, str(dict(dictdef)['context'][0])):
-                # print(dict(dictdef)['context'][0])
+            print(keywords)
+            print(dict(dictdef)['context'][0])
+
+            if re.search(keywords.lower(), str(dict(dictdef)['context'][0]).lower()):
+                print("gotit")
                 testText[id]['answer'] = values['label']
                 break
+            print(" ")
             testText[id]['answer'] = 'guess'
-    return testText
-    # i=0
-    # j=0
-    # for item,de in testText.items():
-    #     i=i+1
-    #     if de['answer'] == 'guess':
-    #         j=j+1
+
+    i=0
+    j=0
+    for item,de in testText.items():
+        i=i+1
+        if de['answer'] == 'guess':
+            j=j+1
     # print(j)
     # print(i)
-    # print(j/i)
-
+    h = 1 -j/i
+    print(str(h) + "     words tagged")
+    return testText
 
 def test(testText,filename):
    'This function use the decision list to do the wsd for each words in test, and generate the my-line-answers.txt'
