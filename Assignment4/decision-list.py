@@ -86,6 +86,8 @@ def process_train_text(filename):
             if_word=s[j].getElementsByTagName("head")
             if if_word!=[] and if_word[0].firstChild.data in ['line','lines']:
               new_text[id_]['context'].append(s[j].childNodes[0].data+'line'+s[j].childNodes[2].data)
+            if if_word!=[] and if_word[0].firstChild.data in [' Line ',' Lines ']:
+              new_text[id_]['context'].append('line'+s[j].childNodes[1].data)
     return new_text
 
 
@@ -194,7 +196,6 @@ def pattern_likelyhood(f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK,labels):
     'This fucntion counts the patterns and compute the likelyhood of each pattern as well as the label infered by this pattern'
     pattern_log=defaultdict(str)
     feature_name=[f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK]
-    print(labels)
     for feature in feature_name: #for each feature
       for pattern in feature: #for each sentence
          pattern_log[pattern]=defaultdict(str)
@@ -234,7 +235,51 @@ def process_test_text(filename):
 def test(testText,filename):
    'This function use the decision list to do the wsd for each words in test, and generate the my-line-answers.txt'
 
+def process_test_text(filename):
+    'This function input and tranform the test file into desired format'
+    'This function is used to read and transform the input text into a usable form'
+    'Each item is an instance, each instance has a answer sense and some sentences'
+    #collect xml dom structure components
+    DOMTree = xml.dom.minidom.parse(filename)
+    collection = DOMTree.documentElement
+    instances=collection.getElementsByTagName("instance")
+    contexts=collection.getElementsByTagName("context")
+    new_text=defaultdict(str) #craete otuput dictionary
+    #assign dom elements to "newtext" dictionary containing context and answers
+    for i in range(len(instances)):
+        id_=instances[i].getAttribute("id")
+        new_text[id_]=defaultdict(str)
+        new_text[id_]['answer']=""
+        s=contexts[i].getElementsByTagName("s")
+        new_text[id_]['context']=[]
+        for j in range(len(s)):
+            if_word=s[j].getElementsByTagName("head")
+            if if_word!=[] and if_word[0].firstChild.data in ['line','lines']:
+              new_text[id_]['context'].append(s[j].childNodes[0].data+'line'+s[j].childNodes[2].data)
+            if if_word!=[] and if_word[0].firstChild.data in ['Line','Lines']:
+              new_text[id_]['context'].append('line'+s[j].childNodes[1].data)
+    return new_text
 
+def assign_test_senses(testText,pattern_log):
+    #convert pattern log to dictionary of dictionaries and sort in descending value
+    pattern = dict()
+    for entry, dictdef in pattern_log.items():
+        if dict(dictdef)['value'] >2.4:
+            pattern[entry] = dict(dictdef)
+    pattern_log = sorted(dict(pattern).items(), key=lambda k: float(k[1]['value']), reverse=True)
+    # print(pattern_log)
+    for id, dictdef in testText.items():
+        # print(dict(dictdef)['context'])
+        for keywords, values in pattern_log:
+            if re.search(keywords, str(dict(dictdef)['context'][0])):
+                # print(dict(dictdef)['context'][0])
+                testText[id]['answer'] = values['label']
+
+                continue
+
+    # for item,de in testText.items():
+    #     print(item)
+    #     print(de['context'])
 
 def main():
     '''
@@ -248,6 +293,7 @@ def main():
 
     #testing
     testText = process_test_text(sys.argv[2])
+    testText = assign_test_senses(testText,pattern_log)
     test(testText,sys.argv[3])
 
 
