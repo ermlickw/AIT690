@@ -187,7 +187,7 @@ def collect_training_context(new_text,K):
                  f_KW[''.join(pattern[index-K])+'_line'][label_list[idx]]+=1
          except: None
 
-         return f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK,labels
+    return f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK,labels
 
 
 def pattern_likelyhood(f_1W,f_W1,f_1W2W,f_W1W2,f_KW,f_WK,labels):
