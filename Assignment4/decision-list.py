@@ -274,12 +274,18 @@ def assign_test_senses(testText,pattern_log):
             if re.search(keywords, str(dict(dictdef)['context'][0])):
                 # print(dict(dictdef)['context'][0])
                 testText[id]['answer'] = values['label']
+                break
+            testText[id]['answer'] = 'line'
 
-                continue
-
-    # for item,de in testText.items():
-    #     print(item)
-    #     print(de['context'])
+    i=0
+    j=0
+    for item,de in testText.items():
+        i=i+1
+        if de['answer'] == 'line':
+            j=j+1
+    print(j)
+    print(i)
+    print(j/i)
 
 def main():
     '''
