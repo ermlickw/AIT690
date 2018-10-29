@@ -1,53 +1,65 @@
 '''
-AIT 690 | Assignment 4 | Due 10/30/2018
+AIT 690 | Assignment 4 | Due 10/31/2018
 Billy Ermlick
 Nidhi Mehrotra
 Xiaojie Guo
 ************************************************************************************************************************************************
-
+Run the prediction file:
 python decision-list.py line-train.xml line-test.xml > my-line-answer.txt
 
+Run the scoring file:
+$ python scorer.pl my-line-answers.txt line-answers.txt
 ************************************************************************************************************************************************
 
+Our performance = 64.28%
+Baseline performance assuming all tags are the 'phone' sense = 57.15%   = 72/126
+
+Our Confusion Matrix:
+
+           phone  product
+phone
+product
+
+-----------
+This program implements a decision list classifier to perform word sense disambiguation
+on the word 'line' used in different contexts.
+
+Feature implemented from Yarowsky paper:
+    1) f_1W = -1word from target
+    2) f_W1 = +1word from target
+    3) f_1W2W = -1 and -2 words from target
+    4) f_W1W2 = +1 and +2 words from target
+    5) f_KW = -K words from target (k=3)
+    6) f_WK = +K words from target (k=3)
+
+The program learns a decision list from line-train.xml and applies that decision list to each
+of the sentences found in line-test.xml in order to assign a sense to the word line. The program
+outputs the decision list it learns to my-decision-list.txt. The list shows show each feature, the log-likelihood score associated with it,
+and the sense it predicts. The program  outputs the answer tags it creates for each sentence to
+STDOUT.
+
+***** TODO Your answer tags should be in the same format as found in line-answers.txt.
 
 
-Write a Python program called decision-list.py that implements a decision list classifier to
-perform word sense disambiguation. This method is described on pages 641-644 of the JM text. You
-should also read the original paper about this method, which is available on BlackBoard (YarowskyDecision-List-1994.pdf).
-Note that even though that paper focuses on accent restoration, the
-method can be used with many classification problems, including word sense disambiguation.
-Your program should use as many features from the original Yarowsky’s method as you think will result
-in an accurate classifier. You are free to add other features if you think they will help. Please make sure
-you only identify features from the training data, and that you clearly explain what features you are using
-in your detailed comments. Your classifier should run from the command line as follows:
-$ python decision-list.py line-train.xml line-test.xml my-decision-list.txt >
-my-line-answers.txt
-This command should learn a decision list from line-train.xml and apply that decision list to each
-of the sentences found in line-test.xml in order to assign a sense to the word line. Do not use
-line-test.xml in any other way (and only identify features from line-train.xml). Your program
-should output the decision list it learns to my-decision-list.txt. You may format your decision
-list as you wish, but please make sure to show each feature, the log-likelihood score associated with it,
-and the sense it predicts. The file my-decision-list.txt is intended to be used as a log file in
-debugging your program. Your program should output the answer tags it creates for each sentence to
-STDOUT. Your answer tags should be in the same format as found in line-answers.txt.
 line-train.xml contains examples of the word line used in the sense of a phone line and a product
-line where the correct sense is marked in the text (to serve as an example from which to learn). linetest.xml
-contains sentences that use the word line without any sense being indicated, where the
-correct answer is found in the file line-answers.txt. You can find line-train.xml and linetest.xml
-in the files section of our site in a compressed directory called line-data.zip.
-Your program decision-list.py should learn its decision list from line-train.xml and then
-apply that to line-test.xml.
-You should also write a utility program called scorer.py which will take as input your sense tagged
-output and compare it with the gold standard "key" data in line-answers.txt. Your scorer program
-should report the overall accuracy of your tagging, and provide a confusion matrix similar to the one found
-on page 156 of JM. This program should write output to STDOUT.
-The scorer program should be run as follows:
-$ python scorer.pl my-line-answers.txt line-answers.txt
-You can certainly use your scorer.py program from the previous assignment as a foundation for this
-program.
+line where the correct sense is marked in the text (to serve as an example from which to learn).
+
+linetest.xml contains sentences that use the word line without any sense being indicated, where the
+correct answer is found in the file line-answers.txt.
+
+decision-list.py learns its decision list from line-train.xml and then
+apply it to line-test.xml.
+
+scorer.py  will take as input your sense tagged output and compare it with the gold
+standard "key" data in line-answers.txt.
+
+
+
 Both decision-list.py and scorer.py should be documented according to the standards of the
 programming assignment rubric. In decision-list.py include your accuracy and confusion matrix
 in the comments. And compare your results to that of the most frequent sense baseline.
+
+
 Please submit your program source code (decision-list.py and scorer.py) as well as a script
 file called decision-list-log.txt that you should create as follows:
 $ script decision-list-log.txt
