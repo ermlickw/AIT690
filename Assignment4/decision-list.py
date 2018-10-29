@@ -5,7 +5,7 @@ Nidhi Mehrotra
 Xiaojie Guo
 ************************************************************************************************************************************************
 
-python decision-list.py line-train.xml line-test.xml my-line-answer.txt
+python decision-list.py line-train.xml line-test.xml > my-line-answer.txt
 
 ************************************************************************************************************************************************
 
@@ -274,30 +274,30 @@ def assign_test_senses(testText,pattern_log):
             # print(keywords)
             # print(dict(dictdef)['context'][0])
 
-            if re.search(keywords.lower(), str(dict(dictdef)['context'][0]).lower()):
+            if re.search(keywords.lower(), str(dict(dictdef)['context'][0]).lower().replace('lines', 'line')):
                 # print("gotit")
                 testText[id]['answer'] = values['label']
                 break
             # print(" ")
-            testText[id]['answer'] = 'guess'
+            testText[id]['answer'] = 'phone'
 ##just for assignment verification
-    i=0
-    j=0
-    for item,de in testText.items():
-        i=i+1
-        if de['answer'] == 'guess':
-            j=j+1
-    # print(j)
-    # print(i)
-    h = 1 -j/i
-    print(str(h) + "     words tagged")
+    # i=0
+    # j=0
+    # for item,de in testText.items():
+    #     i=i+1
+    #     if de['answer'] == 'guess':
+    #         j=j+1
+    # # print(j)
+    # # print(i)
+    # h = 1 -j/i
+    # print(str(h) + "     words tagged")
     return testText
 
-def test(testText,filename):
+def test(testText):
    'This function use the decision list to do the wsd for each words in test, and generate the my-line-answers.txt'
-   with open(filename, "a+") as text_file:
-       for id, dictdef in testText.items():
-           text_file.write(id + "           \\        "+ dictdef['answer']+'   \n')
+   # with open(filename, "a+") as text_file:
+   for id, dictdef in testText.items():
+       print(id + "           \\        "+ dictdef['answer']+' ')
 
 
 
@@ -314,7 +314,7 @@ def main():
     #testing
     testText = process_test_text(sys.argv[2])
     testText = assign_test_senses(testText,pattern_log)
-    test(testText,sys.argv[3])
+    test(testText)
 
 
 if __name__ == '__main__':
