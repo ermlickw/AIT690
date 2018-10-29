@@ -264,7 +264,7 @@ def assign_test_senses(testText,pattern_log):
     #convert pattern log to dictionary of dictionaries and sort in descending value
     pattern = dict()
     for entry, dictdef in pattern_log.items():
-        if dict(dictdef)['value'] >2.3979:
+        if dict(dictdef)['value'] >3.05:
             pattern[entry] = dict(dictdef)
     pattern_log = sorted(dict(pattern).items(), key=lambda k: float(k[1]['value']), reverse=True)
     # print(pattern_log)
