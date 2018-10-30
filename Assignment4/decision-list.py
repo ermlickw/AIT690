@@ -239,7 +239,7 @@ def generate_list(pattern_log):
     for i in range(len(log_list)):
         idx=log_list.index(max(log_list))
         sorted_pattern.append(pattern_list[idx])
-        if log_list[idx]>2.4:
+        if log_list[idx]>0:
           with open("my-decision-list.txt", "a+") as text_file:
              text_file.write(pattern_list[idx]+"\\"+pattern_log[pattern_list[idx]]['label']+'\\'+str(pattern_log[pattern_list[idx]]['value'])+'\n')
           del log_list[idx]
@@ -276,21 +276,36 @@ def assign_test_senses(testText,pattern_log):
     #convert pattern log to dictionary of dictionaries and sort in descending value
     pattern = dict()
     for entry, dictdef in pattern_log.items():
-        if dict(dictdef)['value'] >3.00:
+        if dict(dictdef)['value'] >2:
             pattern[entry] = dict(dictdef)
     pattern_log = sorted(dict(pattern).items(), key=lambda k: float(k[1]['value']), reverse=True)
     # print(pattern_log)
+
     for id, dictdef in testText.items():
 
         for keywords, values in pattern_log:
-            # print(keywords)
             # print(dict(dictdef)['context'][0])
 
+            if re.search('line_',keywords.lower().replace('lines','line')):
+                keywords = re.sub('line_','',keywords.lower().replace('lines','line'))
+                patternsearch = str(r'\bline\W+(?:\w+\W+){3,3}?'+re.escape(keywords)+r'\b')
+
+                if re.search(patternsearch, str(dict(dictdef)['context'][0]).lower().replace('lines', 'line')):
+                    testText[id]['answer'] = values['label']
+                    break
+
+            if re.search('_line',keywords.lower().replace('lines','line')):
+                keywords = re.sub('_line','',keywords.lower().replace('lines','line'))
+                patternsearch = str(r'\b'+re.escape(keywords)+ r'\W+(?:\w+\W+){3,3}?line\b')
+
+                if re.search(patternsearch, str(dict(dictdef)['context'][0]).lower().replace('lines', 'line')):
+                    testText[id]['answer'] = values['label']
+                    break
+
             if re.search(keywords.lower(), str(dict(dictdef)['context'][0]).lower().replace('lines', 'line')):
-                # print("gotit")
                 testText[id]['answer'] = values['label']
                 break
-            # print(" ")
+
             testText[id]['answer'] = 'phone'
 ##just for assignment verification
     # i=0
@@ -310,6 +325,7 @@ def test(testText):
    # with open(filename, "a+") as text_file:
    for id, dictdef in testText.items():
        print(id + "           \\        "+ dictdef['answer']+' ')
+       pass
 
 
 
