@@ -19,24 +19,29 @@ import numpy as np
 from bs4 import BeautifulSoup as Soup
 from sklearn.metrics import confusion_matrix
 
-def score_function(soup,predicted_file):
+def score_function(soup,souppred):
     'This function compute the accuracy of the performance'
     score = 0
-    with open(predicted_file) as predicted_file:
-        for line in predicted_file:
-            line_num, sense = line.split('\\')
-            #Final all instances of answers in Gold file
-            for answer in soup.findAll('answer'):
-                #Fetch sense IDs and instance names
-                ans_attrs = dict(answer.attrs)
-                instance_name = ans_attrs[u'instance']
-                senseid = ans_attrs[u'senseid']
-                #Increase the score if sense Id matches in the predicted and gold file
-                if(line_num.rstrip() == instance_name.rstrip()):
-                    if(sense.strip() == senseid.strip()):
-                        score = score + 1
-        accuracy = score*100/126  #compute the accuracy
-    return accuracy
+    ans_attrs = dict()
+    pred_attrs = dict()
+    #Final all instances of answers in predicted file
+    for prediction in souppred.findAll('answer'):
+        #Fetch sense IDs from predictions
+        pred_attrs[prediction.attrs[u'instance']]=prediction.attrs[u'senseid']
+
+        #Final all instances of answers in Gold file
+    for answer in soup.findAll('answer'):
+        #Fetch sense IDs from answers
+        ans_attrs[answer.attrs[u'instance']]=answer.attrs[u'senseid']
+
+    print(pred_attrs)
+
+    for item in pred_attrs:
+        print(item)
+        if(pred_attrs[item].rstrip() == ans_attrs[item].rstrip()):
+            score = score + 1
+    accuracy = score*100/126  #compute the accuracy
+    return  accuracy
 
 
 def plot_confusion_matrix(cm, classes,
@@ -68,15 +73,17 @@ def plot_confusion_matrix(cm, classes,
     plt.show()
     fig1.savefig('confusion_matrix',dpi=100)
 
-def generate_cm(soup,predicted_file):
+def generate_cm(soup,souppred):
      'This fucntion is used to generate the confusion matrix and the tag label list'
-     #Create an array of predicted senses
-     predicted_senses = []
-     with open(predicted_file) as predicted_file:
-        for line in predicted_file:
-            line_num, sense = line.split('\\')
-            predicted_senses.append(sense.strip())
 
+     #Create an array of predicted word senses
+     predicted_senses = []
+     for prediction in souppred.findAll('answer'):
+            #Fetch sense IDs and instance names
+            ans_attrs = dict(prediction.attrs)
+            instance_name = ans_attrs[u'instance']
+            senseid = ans_attrs[u'senseid']
+            predicted_senses.append(senseid.strip())
      #Create an array of Gold Standard word senses
      gold_standard_senses = []
      for answer in soup.findAll('answer'):
@@ -105,11 +112,14 @@ def main():
      handler = open(gold_file).read()
      soup = Soup(handler,"html.parser")
 
-     accuracy = score_function(soup,predicted_file)
+     handlerpred = open(predicted_file).read()
+     souppred = Soup(handlerpred,"html.parser")
+
+     accuracy = score_function(soup,souppred)
 
      print("Accuracy of word sense disambiguation assignment is: "+"%s" % accuracy+"\n")
      # #generate Confusion Matrix
-     cm,label = generate_cm(soup,predicted_file)
+     cm,label = generate_cm(soup,souppred)
 
      #draw the confusion matrix
      plot_confusion_matrix(cm,label,normalize=False,title='Confusion matrix',cmap=plt.cm.Blues)

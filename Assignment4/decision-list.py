@@ -285,7 +285,7 @@ def assign_test_senses(testText,pattern_log):
 
         for keywords, values in pattern_log:
             # print(dict(dictdef)['context'][0])
-
+            #assign +k features k=3
             if re.search('line_',keywords.lower().replace('lines','line')):
                 keywords = re.sub('line_','',keywords.lower().replace('lines','line'))
                 patternsearch = str(r'\bline\W+(?:\w+\W+){3,3}?'+re.escape(keywords)+r'\b')
@@ -293,7 +293,7 @@ def assign_test_senses(testText,pattern_log):
                 if re.search(patternsearch, str(dict(dictdef)['context'][0]).lower().replace('lines', 'line')):
                     testText[id]['answer'] = values['label']
                     break
-
+            #assign -k features k=3
             if re.search('_line',keywords.lower().replace('lines','line')):
                 keywords = re.sub('_line','',keywords.lower().replace('lines','line'))
                 patternsearch = str(r'\b'+re.escape(keywords)+ r'\W+(?:\w+\W+){3,3}?line\b')
@@ -301,11 +301,11 @@ def assign_test_senses(testText,pattern_log):
                 if re.search(patternsearch, str(dict(dictdef)['context'][0]).lower().replace('lines', 'line')):
                     testText[id]['answer'] = values['label']
                     break
-
+            #assign matching features
             if re.search(keywords.lower(), str(dict(dictdef)['context'][0]).lower().replace('lines', 'line')):
                 testText[id]['answer'] = values['label']
                 break
-
+            #if no matches then pick the most likely choice
             testText[id]['answer'] = 'phone'
 ##just for assignment verification
     # i=0
@@ -324,9 +324,7 @@ def test(testText):
    'This function use the decision list to do the wsd for each words in test, and generate the my-line-answers.txt'
    # with open(filename, "a+") as text_file:
    for id, dictdef in testText.items():
-       print(id + "           \\        "+ dictdef['answer']+' ')
-       pass
-
+       print('<answer instance='+"'"+ id +"'" + " senseid="+"'"+ dictdef['answer']+"'/>")
 
 
 def main():
