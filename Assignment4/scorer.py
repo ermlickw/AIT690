@@ -7,7 +7,7 @@ Xiaojie Guo
 This code is used to evaluate the performance of the tagger performance in the metrics of accuracy.
 It will generate a 'pos-taggingreport.txt' file to report the accuracy and a confusion matrix.
 One could run the scorer.py like:
-$ python scorer.py my-line-answer.txt line-answers.txt
+$ python scorer.py my-line-answers.txt line-answers.txt
 """
 
 import sys
@@ -34,10 +34,8 @@ def score_function(soup,souppred):
         #Fetch sense IDs from answers
         ans_attrs[answer.attrs[u'instance']]=answer.attrs[u'senseid']
 
-    print(pred_attrs)
 
     for item in pred_attrs:
-        print(item)
         if(pred_attrs[item].rstrip() == ans_attrs[item].rstrip()):
             score = score + 1
     accuracy = score*100/126  #compute the accuracy

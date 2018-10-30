@@ -11,14 +11,14 @@ Run the scoring file:
 $ python scorer.pl my-line-answers.txt line-answers.txt
 ************************************************************************************************************************************************
 
-Our performance = 64.28%
+Our performance = 72.22%
 Baseline performance assuming all tags are the 'phone' sense = 57.15%   = 72/126
 
 Our Confusion Matrix:
 
            phone  product
-phone
-product
+phone        38      34
+product      1       53
 
 -----------
 This program implements a decision list classifier to perform word sense disambiguation
@@ -37,8 +37,6 @@ of the sentences found in line-test.xml in order to assign a sense to the word l
 outputs the decision list it learns to my-decision-list.txt. The list shows show each feature, the log-likelihood score associated with it,
 and the sense it predicts. The program  outputs the answer tags it creates for each sentence to
 STDOUT.
-
-***** TODO Your answer tags should be in the same format as found in line-answers.txt.
 
 
 line-train.xml contains examples of the word line used in the sense of a phone line and a product
@@ -276,7 +274,7 @@ def assign_test_senses(testText,pattern_log):
     #convert pattern log to dictionary of dictionaries and sort in descending value
     pattern = dict()
     for entry, dictdef in pattern_log.items():
-        if dict(dictdef)['value'] >2:
+        if dict(dictdef)['value'] >0:
             pattern[entry] = dict(dictdef)
     pattern_log = sorted(dict(pattern).items(), key=lambda k: float(k[1]['value']), reverse=True)
     # print(pattern_log)
