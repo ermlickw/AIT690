@@ -97,36 +97,30 @@ Some of the rules were obtained from the Speech and Language Processing Book by 
 **************************************************************************************<br>
 # AIT690-Assignment4
 
-This is a python program which assigns parts of speech tags to a training file
-which maximize P(tag|word). For words which are not included in the training file,
-they are assumed to be NNself. Words which only have one part of speech in the training
-data are labeled as that part of speech in the test file. Words with multiple
-potential parts of speech which have unlabeled neighbors are tagged as their
-most likely tag in the training dataset. After this proceedure, untagged words
-with tagged neighbors were assigned based on maximizing their conditional
-probabiities. The accuracy of our model before additional POS rules were applied
-was %55.17. After the addition of the rules, our accuracy increased to 80.87%.
-
-The labeled training data is "pos-train.txt"
-The untagged test file is "pos-test.txt"
-The predicted labeled test data is "pos-test-with-tags.txt"
-The golden standard labeled test data is "pos-test-key.txt"
-The scoring file is "scorer.py"
-
-"pos-tagging-report.txt" and "tagger-log.txt" are  reporting and logging files,respectively.
-
-
-The script can be run by entering: <br>
-$  python tagger.py pos-train.txt pos-test.txt > pos-test-with-tags.txt <br>
-$ python scorer.py pos-test-with-tags.txt pos-test-key.txt > pos-taggingreport.txt<br>
-
-Some of the code for the probability tables and confusion matrix was obtained from the NTLK Book.
-https://www.nltk.org/book/
-
-Some of the rules were obtained from the Speech and Language Processing Book by Jurafsky et al.
+Our performance = 72.22%
+Baseline performance assuming all tags are the 'phone' sense = 57.15%   = 72/126
+Our Confusion Matrix:
+           phone  product
+phone        38      34
+product      1       53
+-----------
+This program implements a decision list classifier to perform word sense disambiguation
+on the word 'line' used in different contexts.
+Feature implemented from Yarowsky paper:
+    1) f_1W = -1word from target
+    2) f_W1 = +1word from target
+    3) f_1W2W = -1 and -2 words from target
+    4) f_W1W2 = +1 and +2 words from target
+    5) f_KW = -K words from target (k=3)
+    6) f_WK = +K words from target (k=3)
+The program learns a decision list from line-train.xml and applies that decision list to each
+of the sentences found in line-test.xml in order to assign a sense to the word line. The program
+outputs the decision list it learns to my-decision-list.txt. The list shows show each feature, the log-likelihood score associated with it,
+and the sense it predicts. The program  outputs the answer tags it creates for each sentence to
+STDOUT.
 
 **************************************************************************************<br>
 
-PROJECT
+# PROJECT
 
-DATA available via -> 
+DATA available via -> https://drive.google.com/file/d/1REO629oVacUG2gWz8zyPzpCDgFPkxFox/view?usp=sharing 
