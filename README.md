@@ -93,3 +93,40 @@ Some of the code for the probability tables and confusion matrix was obtained fr
 https://www.nltk.org/book/
 
 Some of the rules were obtained from the Speech and Language Processing Book by Jurafsky et al.
+
+**************************************************************************************<br>
+# AIT690-Assignment4
+
+This is a python program which assigns parts of speech tags to a training file
+which maximize P(tag|word). For words which are not included in the training file,
+they are assumed to be NNself. Words which only have one part of speech in the training
+data are labeled as that part of speech in the test file. Words with multiple
+potential parts of speech which have unlabeled neighbors are tagged as their
+most likely tag in the training dataset. After this proceedure, untagged words
+with tagged neighbors were assigned based on maximizing their conditional
+probabiities. The accuracy of our model before additional POS rules were applied
+was %55.17. After the addition of the rules, our accuracy increased to 80.87%.
+
+The labeled training data is "pos-train.txt"
+The untagged test file is "pos-test.txt"
+The predicted labeled test data is "pos-test-with-tags.txt"
+The golden standard labeled test data is "pos-test-key.txt"
+The scoring file is "scorer.py"
+
+"pos-tagging-report.txt" and "tagger-log.txt" are  reporting and logging files,respectively.
+
+
+The script can be run by entering: <br>
+$  python tagger.py pos-train.txt pos-test.txt > pos-test-with-tags.txt <br>
+$ python scorer.py pos-test-with-tags.txt pos-test-key.txt > pos-taggingreport.txt<br>
+
+Some of the code for the probability tables and confusion matrix was obtained from the NTLK Book.
+https://www.nltk.org/book/
+
+Some of the rules were obtained from the Speech and Language Processing Book by Jurafsky et al.
+
+**************************************************************************************<br>
+
+PROJECT
+
+DATA available via -> 
