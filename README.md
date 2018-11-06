@@ -97,30 +97,29 @@ Some of the rules were obtained from the Speech and Language Processing Book by 
 **************************************************************************************<br>
 # AIT690-Assignment4
 
-Our performance = 72.22%
-Baseline performance assuming all tags are the 'phone' sense = 57.15%   = 72/126
-Our Confusion Matrix:
-           phone  product
-phone        38      34
-product      1       53
+Our performance = 72.22%<br>
+Baseline performance assuming all tags are the 'phone' sense = 57.15% = 72/126<br>
+Our Confusion Matrix:<br>
+           phone  product<br>
+phone        38      34<br>
+product      1       53<br>
 -----------
 This program implements a decision list classifier to perform word sense disambiguation
-on the word 'line' used in different contexts.
-Feature implemented from Yarowsky paper:
-    1) f_1W = -1word from target
-    2) f_W1 = +1word from target
-    3) f_1W2W = -1 and -2 words from target
-    4) f_W1W2 = +1 and +2 words from target
-    5) f_KW = -K words from target (k=3)
-    6) f_WK = +K words from target (k=3)
+on the word 'line' used in different contexts.<br>
+Feature implemented from Yarowsky paper:<br>
+    1) f_1W = -1word from target<br>
+    2) f_W1 = +1word from target<br>
+    3) f_1W2W = -1 and -2 words from target<br>
+    4) f_W1W2 = +1 and +2 words from target<br>
+    5) f_KW = -K words from target (k=3)<br>
+    6) f_WK = +K words from target (k=3)<br>
 The program learns a decision list from line-train.xml and applies that decision list to each
 of the sentences found in line-test.xml in order to assign a sense to the word line. The program
-outputs the decision list it learns to my-decision-list.txt. The list shows show each feature, the log-likelihood score associated with it,
-and the sense it predicts. The program  outputs the answer tags it creates for each sentence to
+outputs the decision list it learns to my-decision-list.txt. The list shows show each feature, the log-likelihood score associated with it, and the sense it predicts. The program  outputs the answer tags it creates for each sentence to
 STDOUT.
 
 **************************************************************************************<br>
 
 # PROJECT
 
-DATA available via -> https://drive.google.com/file/d/1REO629oVacUG2gWz8zyPzpCDgFPkxFox/view?usp=sharing 
+DATA available via -> https://drive.google.com/drive/folders/1gOBlngdaolH7OUROw3pgA02R1vEtHzM5?usp=sharing
