@@ -2,7 +2,7 @@ import sys
 import os
 import dataset
 from bs4 import BeautifulSoup
-
+from datafreeze import freeze
 db = dataset.connect()  # SQL database URL can be stored here <------
 table = db['PATENT_DATA']
 properties = dict()
@@ -26,17 +26,17 @@ for path, subdirs,files in os.walk(root):
                 properties['mainclass'] = c.attrs[u'mc']
 
             subclasses = soup.find_all('ipc')
-            properties['subclasses'] = []
+            subcls = []
             for c in subclasses:
-                properties['subclasses'].append(c.attrs[u'ic'])
-
-            properties['title'] = soup.find('ti').get_text().replace('\n',"")
-            properties['abstract'] = soup.find('ab').get_text().replace('\n',"")
-            properties['claims'] = soup.find('cl').get_text().replace('\n',"")
-            properties['description'] = soup.find('txt').get_text().replace('\n',"")
+                subcls.append(c.attrs[u'ic'])
+            properties['subclasses'] = '"'+"--//--".join(subcls)+'"'
+            properties['title'] = '"'+ soup.find('ti').get_text().replace('\n',"").replace('"',"").replace("'","") +'"'
+            properties['abstract'] = '"'+ soup.find('ab').get_text().replace('\n',"").replace('"',"").replace("'","") +'"'
+            properties['claims'] = '"'+ soup.find('cl').get_text().replace('\n',"").replace('"',"").replace("'","")+'"'
+            properties['description'] = '"'+ soup.find('txt').get_text().replace('\n',"").replace('"',"").replace("'","")+'"'
             # print(properties)
             # print(table)
             table.insert(properties)
 
 
-dataset.freeze(table, format='csv', filename='WIPO-alpha-train.csv')
+freeze(table, format='csv', filename='WIPO-alpha-train.csv')
