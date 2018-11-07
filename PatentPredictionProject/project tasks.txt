@@ -2,13 +2,13 @@ Milestones of project
 
 1. data processing:
     (1) represent each document by a feature vector.
-    (2) construct a network based on the cosine similarity between every two documents and use adjcant matrix to represent          this network.
+    (2) construct a network based on the cosine similarity between every two documents and use adjacent matrix to represent network.
     (3) what we want from this process is: feature vectors for each document and a adjacent matrix.
 
 2. Document classification:
-    (1) using DCNN model to do the semi-supervised learning 
+    (1) using DCNN model to do the semi-supervised learning
     (2) test the document classification results
 
-3. Baseline and gold-standard comparation experiment
+3. Baseline and gold-standard comparative experiment
     (1) using simple classifier, e.g. SVM or MLP as baseline results.
-    (2) using a popular model (from existing lieratures) as gold standard. 
+    (2) using a popular model (from existing literature) as gold standard.
