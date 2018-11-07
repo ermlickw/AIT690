@@ -132,26 +132,6 @@ class Analyzer(object):
         else:
             self.train_feature_model(n_grams, feature_name)
 
-    def heuristics(self, column_name):
-        """
-        Determine the top words that govern selection to certain classes
-        :return:
-        """
-        #TODO: WANRING: THIS METHOD HAS NOT BEEN IMPLEMENTED, PLEASE FIX THIS IMMEDIATELY4
-
-        groups = np.unique(self.response)
-
-        # Load feature model if not loaded
-        if not self.feature_model:
-            self.load_model(column_name)
-
-        # Get model vocabulary
-        vocabulary = np.asarray(self.feature_model.get_feature_names())
-
-        for group in groups:
-            group_features = self.feature_matrix[self.response == group, :]
-            group_means = group_features.mean(axis=0)
-            group_means[group_means > group_means.max()*0.9]
 
     def transform(self, data):
         """

@@ -39,14 +39,6 @@ class Factory(object):
         self.analyzer.extract_features(n_grams, column_name)
         return self.analyzer.feature_matrix, self.analyzer.response
 
-    def compute_heuristics(self, filename, column_name):
-        """
-        Figure out what words make up the groups in the shit
-        :param filename:
-        :return:
-        """
-        self.analyze_column_data(filename, column_name)
-        self.analyzer.heuristics(column_name)
 
     def full_train(self):
         """
