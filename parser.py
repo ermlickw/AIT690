@@ -8,7 +8,7 @@ table = db['PATENT_DATA']
 properties = dict()
 
 # print(os.getcwd())
-root = os.path.realpath("PatentData") +"\Test"
+root = os.path.realpath("PatentData") +"\Train"
 for path, subdirs,files in os.walk(root):
     for name in files:
         filename = os.path.join(path,name)
@@ -39,4 +39,4 @@ for path, subdirs,files in os.walk(root):
             table.insert(properties)
 
 
-freeze(table, format='csv', filename='WIPO-alpha-test.csv')
+freeze(table, format='csv', filename='WIPO-alpha-train.csv')

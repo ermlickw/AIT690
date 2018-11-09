@@ -1,7 +1,6 @@
 #files to ignore for git:
-.idea/
-AIT690/.idea
-.idea
 PatentData/
 WIPO-alpha-test.csv
 WIPO-alpha-train.csv
+.git
+.idea
