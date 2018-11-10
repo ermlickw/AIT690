@@ -7,10 +7,12 @@ db = dataset.connect()  # SQL database URL can be stored here <------
 table = db['PATENT_DATA']
 properties = dict()
 
-# print(os.getcwd())
-root = os.path.realpath("PatentData") +"\Train"
+i=0
+j=0
+root = os.path.realpath("PatentData") +"\Test"
 for path, subdirs,files in os.walk(root):
     for name in files:
+        j=j+1
         filename = os.path.join(path,name)
         if filename.endswith(".xml"):
             print(filename)
@@ -37,6 +39,10 @@ for path, subdirs,files in os.walk(root):
             # print(properties)
             # print(table)
             table.insert(properties)
+            i=i+1
+
+print(i)
+print(j)
 
 
-freeze(table, format='csv', filename='WIPO-alpha-train.csv')
+freeze(table, format='csv', filename='WIPO-alpha-test.csv')
