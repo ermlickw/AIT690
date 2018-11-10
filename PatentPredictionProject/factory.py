@@ -14,12 +14,14 @@ $
 '''
 import nltk
 import sys
+import seaborn as sns
 import pandas as pd
 import re
 import operator
 from collections import defaultdict
 import matplotlib.pyplot as plt
-#from scorer import score_function
+import matplotlib.pyplot as plt
+
 
 
 def preprocess_dataframe(df):
@@ -28,6 +30,19 @@ def preprocess_dataframe(df):
         (2) construct a network based on the cosine similarity between every two documents and use adjacent matrix to represent network.
         (3) what we want from this process is: feature vectors for each document and a adjacent matrix.
     '''
+
+    #convert the subclasses to lists
+    df['subclasses'] = df['subclasses'].apply(lambda x: x.split("--//--"))
+    #convert to lowercase
+    df.iloc[:,4:7] = df.iloc[:,4:7].apply(lambda x: x.str.lower() if(x.dtype == 'object') else x)
+
+    print(df.iloc[1,:])
+
+    sns.countplot(y=df['mainclass'].apply(lambda x: x[:1]))
+    plt.show()
+
+
+
     featurevector = []
     adjacentmatrix = [[]]
     return featurevector, adjacentmatrix
@@ -36,14 +51,17 @@ def main():
     '''
     This is the main function.
 	'''
-    #open file
-    traindf = pd.read_csv("WIPO-alpha-train.csv")
-    testdf = pd.read_csv("WIPO-alpha-test.csv")
+    #open files
+    traindf = pd.read_csv("WIPO-alpha-train.csv", nrows=20 ) # for testing limit number of rows (38745 in total for taining)
+    # testdf = pd.read_csv("WIPO-alpha-test.csv")
+    # print(traindf.shape)
 
     #preprocess data:
     trainfeaturevector, trainadjacentmatrix = preprocess_dataframe(traindf)
-    testfeaturevector, testadjacentmatrix = preprocess_dataframe(traindf)
+    # testfeaturevector, testadjacentmatrix = preprocess_dataframe(testdf)
 
+
+    print("fin")
 
 if __name__ == '__main__':
     main()
