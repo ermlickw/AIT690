@@ -38,8 +38,23 @@ def preprocess_dataframe(df):
 
     print(df.iloc[1,:])
 
-    sns.countplot(y=df['mainclass'].apply(lambda x: x[:1]))
-    plt.show()
+    # sns.countplot(y=df['mainclass'].apply(lambda x: x[:1]))
+    # plt.show()
+
+    #create featurevectors... TFIDF for all documents??
+        # ngrams level
+        # word level
+        # character level
+        # syntactic ngrams?
+    #maybe use word embeddings based on state of the art published embeddings
+
+    #word count
+    #character count
+    #word density
+    #punctuation count
+    #frequency of nouns, verbs, adjectives, pronouns -> POS tags would be required for this one
+    #
+
 
 
 
