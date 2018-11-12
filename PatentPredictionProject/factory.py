@@ -112,12 +112,12 @@ def preprocess_dataframe(df):
     #word density
     #punctuation count
     #frequency of nouns, verbs, adjectives, pronouns -> POS tags would be required for this one
-    #zsdfsdfds
 
 
+    #now make adjacent matrix
 
 
-    featurevector = []
+    featurevector = df_feature_vector
     adjacentmatrix = [[]]
     return featurevector, adjacentmatrix
 
