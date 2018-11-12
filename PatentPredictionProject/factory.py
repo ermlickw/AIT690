@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.stem.porter import PorterStemmer
 from scipy.sparse import hstack
+from nltk.tokenize import RegexpTokenizer
 
 def tokenize(text):
     """
@@ -30,7 +31,9 @@ def tokenize(text):
     :param text:
     :return:
     """
-    tokens = nltk.word_tokenize(text)
+    text = re.sub(r'\d+', '', text) #remove numbers
+    tokenizer = RegexpTokenizer(r'\w+') #remove punctuation
+    tokens = tokenizer.tokenize(text)
     stemmer = PorterStemmer()
     stemmed = [stemmer.stem(item) for item in tokens]
     return stemmed
@@ -92,7 +95,7 @@ def preprocess_dataframe(df):
                     description_tfidf_df,
                     claims_tfidf_df], axis=1)
 
-    print(df.iloc[1,:])
+    print(df_feature_vector.iloc[1,:])
 
         #show distribution of mainclasses
         # sns.countplot(y=df['mainclass'].apply(lambda x: x[:1]))
