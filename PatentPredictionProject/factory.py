@@ -126,8 +126,8 @@ def main():
     This is the main function.
 	'''
     #open files
-    traindf = pd.read_csv("WIPO-alpha-train.csv", nrows=20) # for testing limit number of rows (38745 in total for taining)
-    # testdf = pd.read_csv("WIPO-alpha-test.csv")
+    traindf = pd.read_csv("WIPO-alpha-train.csv", nrows=20) # for testing limit number of rows (46324 in total for taining)
+    # testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
     # print(traindf.shape)
 
     #preprocess data:
