@@ -20,9 +20,20 @@ import re
 import operator
 from collections import defaultdict
 import matplotlib.pyplot as plt
-import matplotlib.pyplot as plt
+from sklearn.feature_extraction.text import TfidfVectorizer
+from nltk.stem.porter import PorterStemmer
+from scipy.sparse import hstack
 
-
+def tokenize(text):
+    """
+    Tokenizer that uses porter stemmer to stemm all works
+    :param text:
+    :return:
+    """
+    tokens = nltk.word_tokenize(text)
+    stemmer = PorterStemmer()
+    stemmed = [stemmer.stem(item) for item in tokens]
+    return stemmed
 
 def preprocess_dataframe(df):
     '''
@@ -35,25 +46,70 @@ def preprocess_dataframe(df):
     df['subclasses'] = df['subclasses'].apply(lambda x: x.split("--//--"))
     #convert to lowercase
     df.iloc[:,4:7] = df.iloc[:,4:7].apply(lambda x: x.str.lower() if(x.dtype == 'object') else x)
+    #keep only first 500 word of description
+    df['description'] = df['description'].apply(lambda x: ' '.join(x.split()[:500]))
+    df['title'] = df['title'].apply(lambda x: x.replace('"',""))
+    df['description'] = df['description'].apply(lambda x: x.replace('"',""))
+    df['claims'] = df['claims'].apply(lambda x: x.replace('"',""))
+    # print(df.iloc[1,:])
+    df.dropna(how='any')
+    response_vector = df['mainclass']
+
+    #prep model
+    n_grams = 2
+    feature_model = TfidfVectorizer(
+        ngram_range=(1, n_grams),
+        stop_words='english',
+        lowercase=True,
+        strip_accents='ascii',
+        decode_error='replace',
+        tokenizer=tokenize,
+        norm='l2',
+        min_df=5,
+        max_features=25000
+    )
+
+    #create tfidf matrix
+    def create_tfidfmatrix(inputcolumn, docs):
+        # print(inputcolumn.tolist())
+        feature_matrix = feature_model.fit(inputcolumn.tolist())
+        # print('Feature matrix fit', feature_matrix.vocabulary_)
+        feature_matrix_transform =feature_matrix.transform(inputcolumn.tolist()).toarray()
+        # print('Feature matrix fit transform', feature_matrix.shape)
+        feature_df = pd.DataFrame(feature_matrix_transform, index=docs.tolist(), columns=feature_matrix.get_feature_names())
+
+        return feature_df
+
+    #assign matrix for each predictor
+    title_tfidf_df = create_tfidfmatrix(df['title'], df['wipenumber'])
+    abstract_tfidf_df = create_tfidfmatrix(df['abstract'], df['wipenumber'])
+    description_tfidf_df = create_tfidfmatrix(df['description'], df['wipenumber'])
+    claims_tfidf_df = create_tfidfmatrix(df['claims'], df['wipenumber'])
+
+    #combine tfidfs created for each column
+    df_feature_vector = pd.concat([title_tfidf_df,
+                    abstract_tfidf_df,
+                    description_tfidf_df,
+                    claims_tfidf_df], axis=1)
 
     print(df.iloc[1,:])
 
-    # sns.countplot(y=df['mainclass'].apply(lambda x: x[:1]))
-    # plt.show()
+        #show distribution of mainclasses
+        # sns.countplot(y=df['mainclass'].apply(lambda x: x[:1]))
+        # plt.show()
 
     #create featurevectors... TFIDF for all documents??
-        # ngrams level
-        # word level
+        # ngrams level (done)
+        # word level (done)
         # character level
         # syntactic ngrams?
     #maybe use word embeddings based on state of the art published embeddings
-
     #word count
     #character count
     #word density
     #punctuation count
     #frequency of nouns, verbs, adjectives, pronouns -> POS tags would be required for this one
-    #
+    #zsdfsdfds
 
 
 
