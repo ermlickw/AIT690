@@ -118,10 +118,9 @@ def preprocess_dataframe(df):
                     description_tfidf_df,
                     claims_tfidf_df], axis=1)
 
-    # print(df_feature_vector.iloc[1,:])
 
     # add word embedding vectors from gold standard paper -> 100 dimensions
-
+    # https://hpi.de/naumann/projects/web-science/deep-learning-for-text/patent-classification.html
     # load the pre-trained word-embedding vectors
     if os.path.isfile('embeddingsindex.pkl'):
         with open('embeddingsindex.pkl', 'rb') as f:  # Python 3: open(..., 'rb')
