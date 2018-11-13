@@ -12,31 +12,50 @@ The script can be run by entering:
 $
 ***************************************************************************************
 '''
+import os
+import sys
 import nltk
 import sys
 import seaborn as sns
 import pandas as pd
 import re
+import numpy as np
 import operator
 from collections import defaultdict
 import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.stem.porter import PorterStemmer
-from scipy.sparse import hstack
 from nltk.tokenize import RegexpTokenizer
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing import text, sequence
+from nltk.corpus import stopwords
+import pickle
 
-def tokenize(text):
+
+def tokenize(txt):
+    """
+    Tokenizer that uses porter stemmer to stemm all words
+    :param text:
+    :return:
+    """
+    txt = re.sub(r'\d+', '', txt) #remove numbers
+    tokenizer = RegexpTokenizer(r'\w+') #remove punctuation
+    tokens = tokenizer.tokenize(txt)
+    stemmer = PorterStemmer()
+    stemmed = [stemmer.stem(item) for item in tokens]
+    return stemmed
+
+def embeddingtokenize(txt):
     """
     Tokenizer that uses porter stemmer to stemm all works
     :param text:
     :return:
     """
-    text = re.sub(r'\d+', '', text) #remove numbers
-    tokenizer = RegexpTokenizer(r'\w+') #remove punctuation
-    tokens = tokenizer.tokenize(text)
-    stemmer = PorterStemmer()
-    stemmed = [stemmer.stem(item) for item in tokens]
-    return stemmed
+    # txt = ' '.join(txt)
+    tokens = text.Tokenizer()
+    tokens.fit_on_texts(txt)
+    word_index = tokens.word_index
+    return tokens, word_index
 
 def preprocess_dataframe(df):
     '''
@@ -57,6 +76,10 @@ def preprocess_dataframe(df):
     # print(df.iloc[1,:])
     df.dropna(how='any')
     response_vector = df['mainclass']
+        #show distribution of mainclasses
+        # sns.countplot(y=df['mainclass'].apply(lambda x: x[:1]))
+        # plt.show()
+
 
     #prep model
     n_grams = 2
@@ -95,23 +118,48 @@ def preprocess_dataframe(df):
                     description_tfidf_df,
                     claims_tfidf_df], axis=1)
 
-    print(df_feature_vector.iloc[1,:])
+    # print(df_feature_vector.iloc[1,:])
 
-        #show distribution of mainclasses
-        # sns.countplot(y=df['mainclass'].apply(lambda x: x[:1]))
-        # plt.show()
+    # add word embedding vectors from gold standard paper -> 100 dimensions
 
-    #create featurevectors... TFIDF for all documents??
-        # ngrams level (done)
-        # word level (done)
-        # character level
-        # syntactic ngrams?
-    #maybe use word embeddings based on state of the art published embeddings
-    #word count
-    #character count
-    #word density
-    #punctuation count
-    #frequency of nouns, verbs, adjectives, pronouns -> POS tags would be required for this one
+    # load the pre-trained word-embedding vectors
+    if os.path.isfile('embeddingsindex.pkl'):
+        with open('embeddingsindex.pkl', 'rb') as f:  # Python 3: open(..., 'rb')
+            embeddings_index = pickle.load(f)
+    else:
+        #if it isn't saved...make it
+        embeddings_index = {}
+        j=0
+        for i, line in enumerate(open('patent-100.vec', encoding="utf8")):
+            try:
+                values = line.split()
+                embeddings_index[' '.join(tokenize(values[0]))] = np.asarray(values[1:], dtype='float')
+                j=j+1
+                print(j)
+            except:
+                continue
+        # save the embeddings index
+        with open('embeddingsindex.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
+            pickle.dump(embeddings_index, f)
+
+
+    # create a tokenizer for features
+    # create a dataframe for all of the text in the document
+    test = df['title']
+    test= test.apply(lambda x: ' '.join(tokenize(x)))
+    tokens, word_index = embeddingtokenize(test)
+
+    # convert text to sequence of tokens and pad them to ensure equal length vectors
+    train_seq_x = sequence.pad_sequences(tokens.texts_to_sequences((df['title'])), maxlen=70)
+
+    # create token-embedding mapping
+    embedding_matrix = np.zeros((len(word_index) + 1, 100))
+    for word, i in word_index.items():
+        embedding_vector = embeddings_index.get(word)
+        if embedding_vector is not None:
+            embedding_matrix[i] = embedding_vector
+
+
 
 
     #now make adjacent matrix
