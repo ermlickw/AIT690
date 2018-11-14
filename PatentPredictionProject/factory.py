@@ -143,19 +143,19 @@ def preprocess_dataframe(df):
 
 
     # create a tokenizer for features
-    # create a dataframe for all of the text in the document
-    test = df['title']
+    # create a dataframe for all of the text in the title of document
+    test = df['title'] +df['abstract']+df['description']+df['claims']
     test= test.apply(lambda x: ' '.join(tokenize(x)))
     tokens, word_index = embeddingtokenize(test)
 
     # convert text to sequence of tokens and pad them to ensure equal length vectors
-    train_seq_x = sequence.pad_sequences(tokens.texts_to_sequences((df['title'])), maxlen=70)
+    train_seq_x = sequence.pad_sequences(tokens.texts_to_sequences((test)), maxlen=70)
 
     # create token-embedding mapping
     embedding_matrix = np.zeros((len(word_index) + 1, 100))
     for word, i in word_index.items():
         embedding_vector = embeddings_index.get(word)
-        if embedding_vector is not None:
+        if embedding_vector is not None and len(embedding_vector)==100:
             embedding_matrix[i] = embedding_vector
 
 
@@ -166,7 +166,7 @@ def preprocess_dataframe(df):
 
     featurevector = df_feature_vector
     adjacentmatrix = [[]]
-    return featurevector, adjacentmatrix
+    return featurevector, adjacentmatrix, response_vector
 
 def main():
     '''
@@ -174,12 +174,15 @@ def main():
 	'''
     #open files
     traindf = pd.read_csv("WIPO-alpha-train.csv", nrows=20) # for testing limit number of rows (46324 in total for taining)
-    # testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
-    # print(traindf.shape)
+    # testdf = pd.read_csv("WIPO-alpha-test.csv", nrows=20)  #29926 total
 
-    #preprocess data:
-    trainfeaturevector, trainadjacentmatrix = preprocess_dataframe(traindf)
-    # testfeaturevector, testadjacentmatrix = preprocess_dataframe(testdf)
+    #preprocess data and create feature vectors:
+    train_feature_vector, train_adjacentmatrix, train_response_vector = preprocess_dataframe(traindf)
+    # test_feature_vector, test_adjacentmatrix, test_response_vector = preprocess_dataframe(testdf)
+
+    #build classifiers
+    train_model(train_feature_vector, test_feature_vector, train_adjacentmatrix, response_vector)
+
 
 
     print("fin")
