@@ -4,7 +4,8 @@ import networkx as nx
 import scipy.sparse as sp
 from scipy.sparse.linalg.eigen.arpack import eigsh
 import sys
-
+from sklearn.metrics import pairwise_distances
+from scipy.spatial.distance import cosine
 
 def parse_index_file(filename):
     """Parse index file."""
@@ -88,6 +89,49 @@ def load_data(dataset_str):
     y_test[test_mask, :] = labels[test_mask, :]
 
     return adj, features, y_train, y_val, y_test, train_mask, val_mask, test_mask
+
+def load_data_patent():
+    train=np.load('train.npy')[:,:210]
+    test=np.load('test.npy')[:,:210]
+    train_label=np.load('train_label.npy')
+    test_label=np.load('test_label.npy')
+    
+    node=len(train)+len(test)
+    features=np.concatenate((train,test),axis=0)
+    
+       
+    adj = np.zeros((node,node))   #compute adjacent matrix
+    for i in range(node):
+        for j in range(i,node):
+            if cosine(features[i],features[j])>0.98:
+                adj[i][j]=1
+                
+    labels=np.concatenate((train_label,test_label),axis=0)
+    label_list=list(set(list(labels)))  #convert label to hot vector for each sample
+    num_class=len(label_list)
+    label=np.zeros((node,num_class))  
+    for i in range(node):
+        j=label_list.index(labels[i])
+        label[i][j]=1
+
+    idx_train = range(0,int(node/2))     #assign the train dataset
+    idx_val = range(int(node/2),int(3*node/4))
+    idx_test = range(int(3*node/4),node)
+    train_mask = sample_mask(idx_train, node)
+    val_mask = sample_mask(idx_val, node)
+    test_mask = sample_mask(idx_test, node)
+
+    y_train = np.zeros(label.shape)
+    y_val = np.zeros(label.shape)
+    y_test = np.zeros(label.shape)
+    y_train[train_mask, :] = label[train_mask, :]
+    y_val[val_mask, :] = label[val_mask, :]
+    y_test[test_mask, :] = label[test_mask, :]
+    
+    #convert to sparse
+    adj_sparse=sp.coo_matrix(adj)
+    feature_sparse=sp.coo_matrix(features)
+    return adj_sparse, feature_sparse, y_train, y_val, y_test, train_mask, val_mask, test_mask
 
 
 def sparse_to_tuple(sparse_mx):
