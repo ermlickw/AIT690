@@ -165,8 +165,8 @@ def preprocess_dataframe(df):
 
 
     featurevector = df_feature_vector
-    adjacentmatrix = [[]]
-    return featurevector, adjacentmatrix, response_vector
+    
+    return featurevector, response_vector
 
 def main():
     '''
@@ -181,7 +181,7 @@ def main():
     # test_feature_vector, test_adjacentmatrix, test_response_vector = preprocess_dataframe(testdf)
 
     #build classifiers
-    train_model(train_feature_vector, test_feature_vector, train_adjacentmatrix, response_vector)
+    train_model(train_feature_vector, test_feature_vector, response_vector)
 
 
 
