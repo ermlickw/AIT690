@@ -177,8 +177,8 @@ def main():
     # testdf = pd.read_csv("WIPO-alpha-test.csv", nrows=20)  #29926 total
 
     #preprocess data and create feature vectors:
-    train_feature_vector, train_adjacentmatrix, train_response_vector = preprocess_dataframe(traindf)
-    # test_feature_vector, test_adjacentmatrix, test_response_vector = preprocess_dataframe(testdf)
+    train_feature_vector, train_response_vector = preprocess_dataframe(traindf)
+    # test_feature_vector, test_response_vector = preprocess_dataframe(testdf)
 
     #build classifiers
     train_model(train_feature_vector, test_feature_vector, response_vector)
