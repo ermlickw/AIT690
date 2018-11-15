@@ -4,3 +4,6 @@ WIPO-alpha-test.csv
 WIPO-alpha-train.csv
 .git
 .idea
+embeddingsindex.pkl
+__pycache__
+patent-100.vec
