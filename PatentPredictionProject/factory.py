@@ -174,14 +174,19 @@ def main():
 	'''
     #open files
     traindf = pd.read_csv("WIPO-alpha-train.csv", nrows=20) # for testing limit number of rows (46324 in total for taining)
-    # testdf = pd.read_csv("WIPO-alpha-test.csv", nrows=20)  #29926 total
+    testdf = pd.read_csv("WIPO-alpha-test.csv", nrows=20)  #29926 total
 
     #preprocess data and create feature vectors:
     train_feature_vector, train_response_vector = preprocess_dataframe(traindf)
-    # test_feature_vector, test_response_vector = preprocess_dataframe(testdf)
+    test_feature_vector, test_response_vector = preprocess_dataframe(testdf)
+    #save the processed dataset
+    np.save('train.npy',train_feature_vector)
+    np.save('train_label.npy',train_response_vector)
+    np.save('test.npy',test_feature_vector)
+    np.save('test_label.npy',test_response_vector)
 
     #build classifiers
-    train_model(train_feature_vector, test_feature_vector, response_vector)
+    #train_model(train_feature_vector, test_feature_vector, response_vector)
 
 
 
