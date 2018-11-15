@@ -57,7 +57,7 @@ def embeddingtokenize(txt):
     word_index = tokens.word_index
     return tokens, word_index
 
-def preprocess_dataframe(df):
+def preprocess_dataframe(df, numbtrainrows):
     '''
         (1) represent each document by a feature vector.
         (2) construct a network based on the cosine similarity between every two documents and use adjacent matrix to represent network.
@@ -159,14 +159,14 @@ def preprocess_dataframe(df):
             embedding_matrix[i] = embedding_vector
 
 
-
-
-    #now make adjacent matrix
-
-
+    #assign to train and test vectors and labels
     featurevector = df_feature_vector
-    
-    return featurevector, response_vector
+    train_feature_vector = df_feature_vector.iloc[:numbtrainrows,:]
+    test_feature_vector = df_feature_vector.iloc[numbtrainrows:,:]
+    train_response_vector = response_vector.iloc[:numbtrainrows]
+    test_response_vector = response_vector.iloc[numbtrainrows:]
+
+    return   train_feature_vector, train_response_vector, test_feature_vector, test_response_vector
 
 def main():
     '''
@@ -175,10 +175,12 @@ def main():
     #open files
     traindf = pd.read_csv("WIPO-alpha-train.csv", nrows=20) # for testing limit number of rows (46324 in total for taining)
     testdf = pd.read_csv("WIPO-alpha-test.csv", nrows=20)  #29926 total
+    combineddf = traindf.append(testdf)
 
     #preprocess data and create feature vectors:
-    train_feature_vector, train_response_vector = preprocess_dataframe(traindf)
-    test_feature_vector, test_response_vector = preprocess_dataframe(testdf)
+    train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
+    # train_feature_vector, train_response_vector = preprocess_dataframe(traindf)
+    # test_feature_vector, test_response_vector = preprocess_dataframe(testdf)
     #save the processed dataset
     np.save('train.npy',train_feature_vector)
     np.save('train_label.npy',train_response_vector)
