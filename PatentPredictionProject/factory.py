@@ -179,8 +179,7 @@ def main():
 
     #preprocess data and create feature vectors:
     train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
-    # train_feature_vector, train_response_vector = preprocess_dataframe(traindf)
-    # test_feature_vector, test_response_vector = preprocess_dataframe(testdf)
+
     #save the processed dataset
     np.save('train.npy',train_feature_vector)
     np.save('train_label.npy',train_response_vector)
