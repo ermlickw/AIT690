@@ -170,12 +170,15 @@ def preprocess_dataframe(df, numbtrainrows):
     train_response_vector = response_vector.iloc[:numbtrainrows]
     test_response_vector = response_vector.iloc[numbtrainrows:]
 
+<<<<<<< HEAD
     #save the processed dataset
     np.save('train.npy',train_feature_vector)
     np.save('train_label.npy',train_response_vector)
     np.save('test.npy',test_feature_vector)
     np.save('test_label.npy',test_response_vector)
 
+=======
+>>>>>>> e92be477c54ae1640744fa4b827953bc3e7ee724
     return   train_feature_vector, train_response_vector, test_feature_vector, test_response_vector
 
 def main():
@@ -186,6 +189,7 @@ def main():
     traindf = pd.read_csv("WIPO-alpha-train.csv", nrows=20) # for testing limit number of rows (46324 in total for taining)
     testdf = pd.read_csv("WIPO-alpha-test.csv", nrows=20)  #29926 total
     combineddf = traindf.append(testdf)
+<<<<<<< HEAD
 
     #Document and class analysis:
     # print(traindf['mainclass'].nunique())
@@ -203,6 +207,17 @@ def main():
 
     #preprocess data and create feature vectors:
     train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
+=======
+
+    #preprocess data and create feature vectors:
+    train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
+
+    #save the processed dataset
+    np.save('train.npy',train_feature_vector)
+    np.save('train_label.npy',train_response_vector)
+    np.save('test.npy',test_feature_vector)
+    np.save('test_label.npy',test_response_vector)
+>>>>>>> e92be477c54ae1640744fa4b827953bc3e7ee724
 
     #build classifiers
     #train_model(train_feature_vector, test_feature_vector, response_vector)
