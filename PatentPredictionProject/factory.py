@@ -57,7 +57,7 @@ def embeddingtokenize(txt):
     word_index = tokens.word_index
     return tokens, word_index
 
-def preprocess_dataframe(df):
+def preprocess_dataframe(df, numbtrainrows):
     '''
         (1) represent each document by a feature vector.
         (2) construct a network based on the cosine similarity between every two documents and use adjacent matrix to represent network.
@@ -76,13 +76,17 @@ def preprocess_dataframe(df):
     # print(df.iloc[1,:])
     df.dropna(how='any')
     response_vector = df['mainclass']
-        #show distribution of mainclasses
-        # sns.countplot(y=df['mainclass'].apply(lambda x: x[:1]))
-        # plt.show()
 
+    # show distribution of mainclasses
+    # sns.countplot(y=df['mainclass'].apply(lambda x: x[:4]))
+    # plt.show()
+
+    # print()
+    # print(len(df[df['mainclass'].apply(lambda x: x[:4])=='B29C'])) ## good candiate for simplification problem
+    # print((df[df['mainclass'].apply(lambda x: x[:4])=='B29C'])['mainclass'].nunique())
 
     #prep model
-    n_grams = 2
+    n_grams = 3
     feature_model = TfidfVectorizer(
         ngram_range=(1, n_grams),
         stop_words='english',
@@ -159,14 +163,20 @@ def preprocess_dataframe(df):
             embedding_matrix[i] = embedding_vector
 
 
-
-
-    #now make adjacent matrix
-
-
+    #assign to train and test vectors and labels
     featurevector = df_feature_vector
-    
-    return featurevector, response_vector
+    train_feature_vector = df_feature_vector.iloc[:numbtrainrows,:]
+    test_feature_vector = df_feature_vector.iloc[numbtrainrows:,:]
+    train_response_vector = response_vector.iloc[:numbtrainrows]
+    test_response_vector = response_vector.iloc[numbtrainrows:]
+
+    #save the processed dataset
+    np.save('train.npy',train_feature_vector)
+    np.save('train_label.npy',train_response_vector)
+    np.save('test.npy',test_feature_vector)
+    np.save('test_label.npy',test_response_vector)
+
+    return   train_feature_vector, train_response_vector, test_feature_vector, test_response_vector
 
 def main():
     '''
@@ -175,15 +185,24 @@ def main():
     #open files
     traindf = pd.read_csv("WIPO-alpha-train.csv", nrows=20) # for testing limit number of rows (46324 in total for taining)
     testdf = pd.read_csv("WIPO-alpha-test.csv", nrows=20)  #29926 total
+    combineddf = traindf.append(testdf)
+
+    #Document and class analysis:
+    # print(traindf['mainclass'].nunique())
+    # print(testdf['mainclass'].nunique())
+    # df1 = traindf['mainclass']
+    # df2 = testdf['mainclass']
+    # print('number of mainclasses of train in test')
+    # print(df1.isin(df2).value_counts())
+    # print('number of mainclasses of test in train')
+    # print(df2.isin(df1).value_counts())
+    # print('number of unique mainclasses of test not in train')
+    # print(df2[~df2.isin(df1)].nunique())
+    # print('number of unique mainclasses of train not in test')
+    # print(df1[~df1.isin(df2)].nunique())
 
     #preprocess data and create feature vectors:
-    train_feature_vector, train_response_vector = preprocess_dataframe(traindf)
-    test_feature_vector, test_response_vector = preprocess_dataframe(testdf)
-    #save the processed dataset
-    np.save('train.npy',train_feature_vector)
-    np.save('train_label.npy',train_response_vector)
-    np.save('test.npy',test_feature_vector)
-    np.save('test_label.npy',test_response_vector)
+    train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
 
     #build classifiers
     #train_model(train_feature_vector, test_feature_vector, response_vector)
