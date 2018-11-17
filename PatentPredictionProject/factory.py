@@ -126,41 +126,41 @@ def preprocess_dataframe(df, numbtrainrows):
     # add word embedding vectors from gold standard paper -> 100 dimensions
     # https://hpi.de/naumann/projects/web-science/deep-learning-for-text/patent-classification.html
     # load the pre-trained word-embedding vectors
-    if os.path.isfile('embeddingsindex.pkl'):
-        with open('embeddingsindex.pkl', 'rb') as f:  # Python 3: open(..., 'rb')
-            embeddings_index = pickle.load(f)
-    else:
-        #if it isn't saved...make it
-        embeddings_index = {}
-        j=0
-        for i, line in enumerate(open('patent-100.vec', encoding="utf8")):
-            try:
-                values = line.split()
-                embeddings_index[' '.join(tokenize(values[0]))] = np.asarray(values[1:], dtype='float')
-                j=j+1
-                print(j)
-            except:
-                continue
-        # save the embeddings index
-        with open('embeddingsindex.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
-            pickle.dump(embeddings_index, f)
-
-
-    # create a tokenizer for features
-    # create a dataframe for all of the text in the title of document
-    test = df['title'] +df['abstract']+df['description']+df['claims']
-    test= test.apply(lambda x: ' '.join(tokenize(x)))
-    tokens, word_index = embeddingtokenize(test)
-
-    # convert text to sequence of tokens and pad them to ensure equal length vectors
-    train_seq_x = sequence.pad_sequences(tokens.texts_to_sequences((test)), maxlen=70)
-
-    # create token-embedding mapping
-    embedding_matrix = np.zeros((len(word_index) + 1, 100))
-    for word, i in word_index.items():
-        embedding_vector = embeddings_index.get(word)
-        if embedding_vector is not None and len(embedding_vector)==100:
-            embedding_matrix[i] = embedding_vector
+    # if os.path.isfile('embeddingsindex.pkl'):
+    #     with open('embeddingsindex.pkl', 'rb') as f:  # Python 3: open(..., 'rb')
+    #         embeddings_index = pickle.load(f)
+    # else:
+    #     #if it isn't saved...make it
+    #     embeddings_index = {}
+    #     j=0
+    #     for i, line in enumerate(open('patent-100.vec', encoding="utf8")):
+    #         try:
+    #             values = line.split()
+    #             embeddings_index[' '.join(tokenize(values[0]))] = np.asarray(values[1:], dtype='float')
+    #             j=j+1
+    #             print(j)
+    #         except:
+    #             continue
+    #     # save the embeddings index
+    #     with open('embeddingsindex.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
+    #         pickle.dump(embeddings_index, f)
+    #
+    #
+    # # create a tokenizer for features
+    # # create a dataframe for all of the text in the title of document
+    # test = df['title'] +df['abstract']+df['description']+df['claims']
+    # test= test.apply(lambda x: ' '.join(tokenize(x)))
+    # tokens, word_index = embeddingtokenize(test)
+    #
+    # # convert text to sequence of tokens and pad them to ensure equal length vectors
+    # train_seq_x = sequence.pad_sequences(tokens.texts_to_sequences((test)), maxlen=70)
+    #
+    # # create token-embedding mapping
+    # embedding_matrix = np.zeros((len(word_index) + 1, 100))
+    # for word, i in word_index.items():
+    #     embedding_vector = embeddings_index.get(word)
+    #     if embedding_vector is not None and len(embedding_vector)==100:
+    #         embedding_matrix[i] = embedding_vector
 
 
     #assign to train and test vectors and labels
@@ -183,11 +183,17 @@ def main():
     This is the main function.
 	'''
     #open files
-    traindf = pd.read_csv("WIPO-alpha-train.csv", nrows=20) # for testing limit number of rows (46324 in total for taining)
-    testdf = pd.read_csv("WIPO-alpha-test.csv", nrows=20)  #29926 total
-    combineddf = traindf.append(testdf)
+    traindf = pd.read_csv("WIPO-alpha-train.csv") # for testing limit number of rows (46324 in total for taining)
+    testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
 
-    #Document and class analysis:
+    #simplify the dataset to a representative sample for the sake of processing time
+    traindf = traindf[traindf['mainclass'].apply(lambda x: x[:4])=='B29C']
+    testdf = testdf[testdf['mainclass'].apply(lambda x: x[:4])=='B29C']
+    combineddf = traindf.append(testdf)
+    print(len(traindf))
+    print(len(testdf))
+    
+    # #Document and class analysis:
     # print(traindf['mainclass'].nunique())
     # print(testdf['mainclass'].nunique())
     # df1 = traindf['mainclass']
