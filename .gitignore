@@ -7,3 +7,7 @@ WIPO-alpha-train.csv
 embeddingsindex.pkl
 __pycache__
 patent-100.vec
+train.npy
+train_label.npy
+test.npy
+test_label.npy
