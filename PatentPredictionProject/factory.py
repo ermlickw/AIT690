@@ -5,9 +5,6 @@ Nidhi Mehrotra
 Xiaojie Guo
 ************************************************************************************************************************************************
 This is a python project which predicts the IPC classficiation of patents.
-
-
-
 The script can be run by entering:
 $
 ***************************************************************************************
@@ -30,6 +27,7 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing import text, sequence
 from nltk.corpus import stopwords
 import pickle
+from sklearn.naive_bayes import MultinomialNB
 
 from sklearn import model_selection, preprocessing, linear_model, naive_bayes, metrics, svm
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
@@ -61,6 +59,7 @@ def embeddingtokenize(txt):
     word_index = tokens.word_index
     return tokens, word_index
 
+<<<<<<< HEAD
 def train_model(classifier, feature_vector_train, label, feature_vector_valid, valid_y):
     # fit the training dataset on the classifier
     classifier.fit(feature_vector_train, label)
@@ -73,6 +72,21 @@ def train_model(classifier, feature_vector_train, label, feature_vector_valid, v
 
     return metrics.accuracy_score(predictions, valid_y)
 
+=======
+def train_model(train, train_label, test, test_label):
+    '''This function will train the data using base model'''
+    #train_label = np.load('train_label.npy')
+    #train = np.load('train.npy')
+    #test = np.load('test.npy')
+    #test_label = np.load('test_label.npy')
+	
+    clf = MultinomialNB(alpha=0.01).fit(train, train_label)
+	
+    predicted = clf.predict(test)
+
+    accuracy = np.mean(predicted == test_label) * 100
+    print("Accuracy of Naive Bayes Model is", accuracy, "%")
+>>>>>>> d49ae0a23b5bbc9271889e316983a12e0b4705aa
 
 def preprocess_dataframe(df, numbtrainrows):
     '''
@@ -242,6 +256,7 @@ def main():
     #preprocess data and create feature vectors:
     train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
 
+<<<<<<< HEAD
     # Naive Bayes on Ngram Level TF IDF Vectors
     accuracy = train_model(linear_model.LogisticRegression(), train_feature_vector, train_response_vector, test_feature_vector, test_response_vector)
     print ("NB, N-Gram Vectors: ", accuracy)
@@ -249,6 +264,10 @@ def main():
     #build classifierscdxvd
     #train_model(train_feature_vector, test_feature_vector, response_vector)
 
+=======
+    #build classifiers
+    train_model(train_feature_vector, train_response_vector, test_feature_vector, test_response_vector)
+>>>>>>> d49ae0a23b5bbc9271889e316983a12e0b4705aa
 
 
     print("fin")
