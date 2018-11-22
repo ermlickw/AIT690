@@ -61,6 +61,19 @@ def embeddingtokenize(txt):
     word_index = tokens.word_index
     return tokens, word_index
 
+def train_model(classifier, feature_vector_train, label, feature_vector_valid, valid_y):
+    # fit the training dataset on the classifier
+    classifier.fit(feature_vector_train, label)
+
+    # predict the labels on validation dataset
+    predictions = classifier.predict(feature_vector_valid)
+
+    if is_neural_net:
+        predictions = predictions.argmax(axis=-1)
+
+    return metrics.accuracy_score(predictions, valid_y)
+
+
 def preprocess_dataframe(df, numbtrainrows):
     '''
         (1) represent each document by a feature vector.
@@ -173,7 +186,7 @@ def preprocess_dataframe(df, numbtrainrows):
     #assign to train and test vectors and labels
     train_feature_vector = df_feature_vector.iloc[:numbtrainrows,:]
     test_feature_vector = df_feature_vector.iloc[numbtrainrows:,:]
-    df_feature_vector = None
+    df_feature_vector =None
     train_response_vector = response_vector.iloc[:numbtrainrows]
     test_response_vector = response_vector.iloc[numbtrainrows:]
     response_vector = None
@@ -208,8 +221,8 @@ def main():
     testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
 
     #simplify the dataset to a representative sample for the sake of processing time
-    # traindf = traindf[traindf['mainclass'].apply(lambda x: x[:4])=='B29C']
-    # testdf = testdf[testdf['mainclass'].apply(lambda x: x[:4])=='B29C']
+    traindf = traindf[traindf['mainclass'].apply(lambda x: x[:4])=='B29C']
+    testdf = testdf[testdf['mainclass'].apply(lambda x: x[:4])=='B29C']
     combineddf = traindf.append(testdf)
 
     # #Document and class analysis:
