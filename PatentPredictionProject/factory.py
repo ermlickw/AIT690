@@ -31,6 +31,10 @@ from keras.preprocessing import text, sequence
 from nltk.corpus import stopwords
 import pickle
 
+from sklearn import model_selection, preprocessing, linear_model, naive_bayes, metrics, svm
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn import decomposition, ensemble
+
 
 def tokenize(txt):
     """
@@ -86,7 +90,7 @@ def preprocess_dataframe(df, numbtrainrows):
     # print((df[df['mainclass'].apply(lambda x: x[:4])=='B29C'])['mainclass'].nunique())
 
     #prep model
-    n_grams = 3
+    n_grams = 1
     feature_model = TfidfVectorizer(
         ngram_range=(1, n_grams),
         stop_words='english',
@@ -95,8 +99,8 @@ def preprocess_dataframe(df, numbtrainrows):
         decode_error='replace',
         tokenizer=tokenize,
         norm='l2',
-        min_df=5,
-        max_features=25000
+        min_df=10,
+        max_features=10000
     )
 
     #create tfidf matrix
@@ -122,7 +126,10 @@ def preprocess_dataframe(df, numbtrainrows):
                     description_tfidf_df,
                     claims_tfidf_df], axis=1)
 
-
+    title_tfidf_df = None
+    abstract_tfidf_df = None
+    description_tfidf_df = None
+    claims_tfidf_df = None
     # add word embedding vectors from gold standard paper -> 100 dimensions
     # https://hpi.de/naumann/projects/web-science/deep-learning-for-text/patent-classification.html
     # load the pre-trained word-embedding vectors
@@ -164,11 +171,12 @@ def preprocess_dataframe(df, numbtrainrows):
 
 
     #assign to train and test vectors and labels
-    featurevector = df_feature_vector
     train_feature_vector = df_feature_vector.iloc[:numbtrainrows,:]
     test_feature_vector = df_feature_vector.iloc[numbtrainrows:,:]
+    df_feature_vector = None
     train_response_vector = response_vector.iloc[:numbtrainrows]
     test_response_vector = response_vector.iloc[numbtrainrows:]
+    response_vector = None
 
     #save the processed dataset
     np.save('train.npy',train_feature_vector)
@@ -177,6 +185,19 @@ def preprocess_dataframe(df, numbtrainrows):
     np.save('test_label.npy',test_response_vector)
 
     return   train_feature_vector, train_response_vector, test_feature_vector, test_response_vector
+
+def train_model(classifier, feature_vector_train, label, feature_vector_valid, valid_y, is_neural_net=False):
+    # fit the training dataset on the classifier
+    classifier.fit(feature_vector_train, label)
+
+    # predict the labels on validation dataset
+    predictions = classifier.predict(feature_vector_valid)
+
+    if is_neural_net:
+        predictions = predictions.argmax(axis=-1)
+
+    return metrics.accuracy_score(predictions, valid_y)
+
 
 def main():
     '''
@@ -187,12 +208,10 @@ def main():
     testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
 
     #simplify the dataset to a representative sample for the sake of processing time
-    traindf = traindf[traindf['mainclass'].apply(lambda x: x[:4])=='B29C']
-    testdf = testdf[testdf['mainclass'].apply(lambda x: x[:4])=='B29C']
+    # traindf = traindf[traindf['mainclass'].apply(lambda x: x[:4])=='B29C']
+    # testdf = testdf[testdf['mainclass'].apply(lambda x: x[:4])=='B29C']
     combineddf = traindf.append(testdf)
-    print(len(traindf))
-    print(len(testdf))
-    
+
     # #Document and class analysis:
     # print(traindf['mainclass'].nunique())
     # print(testdf['mainclass'].nunique())
@@ -210,7 +229,11 @@ def main():
     #preprocess data and create feature vectors:
     train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
 
-    #build classifiers
+    # Naive Bayes on Ngram Level TF IDF Vectors
+    accuracy = train_model(linear_model.LogisticRegression(), train_feature_vector, train_response_vector, test_feature_vector, test_response_vector)
+    print ("NB, N-Gram Vectors: ", accuracy)
+
+    #build classifierscdxvd
     #train_model(train_feature_vector, test_feature_vector, response_vector)
 
 
