@@ -20,19 +20,33 @@ import numpy as np
 import operator
 from collections import defaultdict
 import matplotlib.pyplot as plt
-from sklearn.feature_extraction.text import TfidfVectorizer
+
 from nltk.stem.porter import PorterStemmer
 from nltk.tokenize import RegexpTokenizer
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing import text, sequence
 from nltk.corpus import stopwords
 import pickle
-from sklearn.naive_bayes import MultinomialNB
 
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import model_selection, preprocessing, linear_model, naive_bayes, metrics, svm
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn import decomposition, ensemble
-
+from sklearn.decomposition import TruncatedSVD
+from sklearn.decomposition import PCA
+from sklearn.cross_decomposition import PLSRegression
+from sklearn.feature_selection import SelectPercentile, f_classif
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import SGDClassifier, PassiveAggressiveClassifier, Perceptron, LogisticRegression
+from sklearn.model_selection import KFold
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
+from sklearn.feature_selection import SelectKBest, chi2
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import learning_curve
+from sklearn.metrics import confusion_matrix
+import numpy as np
+import dill as pickle
 
 def tokenize(txt):
     """
@@ -59,34 +73,7 @@ def embeddingtokenize(txt):
     word_index = tokens.word_index
     return tokens, word_index
 
-<<<<<<< HEAD
-def train_model(classifier, feature_vector_train, label, feature_vector_valid, valid_y):
-    # fit the training dataset on the classifier
-    classifier.fit(feature_vector_train, label)
 
-    # predict the labels on validation dataset
-    predictions = classifier.predict(feature_vector_valid)
-
-    if is_neural_net:
-        predictions = predictions.argmax(axis=-1)
-
-    return metrics.accuracy_score(predictions, valid_y)
-
-=======
-def train_model(train, train_label, test, test_label):
-    '''This function will train the data using base model'''
-    #train_label = np.load('train_label.npy')
-    #train = np.load('train.npy')
-    #test = np.load('test.npy')
-    #test_label = np.load('test_label.npy')
-	
-    clf = MultinomialNB(alpha=0.01).fit(train, train_label)
-	
-    predicted = clf.predict(test)
-
-    accuracy = np.mean(predicted == test_label) * 100
-    print("Accuracy of Naive Bayes Model is", accuracy, "%")
->>>>>>> d49ae0a23b5bbc9271889e316983a12e0b4705aa
 
 def preprocess_dataframe(df, numbtrainrows):
     '''
@@ -126,8 +113,8 @@ def preprocess_dataframe(df, numbtrainrows):
         decode_error='replace',
         tokenizer=tokenize,
         norm='l2',
-        min_df=10,
-        max_features=10000
+        min_df=5,
+        max_features=25000
     )
 
     #create tfidf matrix
@@ -197,7 +184,30 @@ def preprocess_dataframe(df, numbtrainrows):
     #         embedding_matrix[i] = embedding_vector
 
 
+    print(df_feature_vector.shape)
+
+    # top percentile variance selection
+    # selector = SelectPercentile(f_classif, percentile=80)
+    # df_feature_vector = selector.fit_transform(df_feature_vector,response_vector)
+    #
+    # #PCA on feature_matrix
+    # pca = PCA(n_components=100)
+    # df_feature_vector = pca.fit_transform(df_feature_vector)
+
+    #SVD instead -latent semantic analysis
+    # SVDtrunc = TruncatedSVD(n_components=100)
+    # df_feature_vector = SVDtrunc.fit_transform(df_feature_vector)
+
+    #NZV on feature matrix
+    # df_feature_vector = SelectKBest(chi2, k=int(0.05*df_feature_vector.shape[1])).fit_transform(df_feature_vector, response_vector)
+
+    #another selection method - top percentile summation
+    # selector = SelectPercentile(f_classif, percentile=80)
+    # df_feature_vector = selector.fit_transform(df_feature_vector,response_vector)
+
+
     #assign to train and test vectors and labels
+    df_feature_vector = pd.DataFrame(df_feature_vector)
     train_feature_vector = df_feature_vector.iloc[:numbtrainrows,:]
     test_feature_vector = df_feature_vector.iloc[numbtrainrows:,:]
     df_feature_vector =None
@@ -213,15 +223,21 @@ def preprocess_dataframe(df, numbtrainrows):
 
     return   train_feature_vector, train_response_vector, test_feature_vector, test_response_vector
 
-def train_model(classifier, feature_vector_train, label, feature_vector_valid, valid_y, is_neural_net=False):
-    # fit the training dataset on the classifier
-    classifier.fit(feature_vector_train, label)
+def train_model(classifier, params, feature_vector_train, label, feature_vector_valid, valid_y, is_neural_net=False):
 
-    # predict the labels on validation dataset
-    predictions = classifier.predict(feature_vector_valid)
 
-    if is_neural_net:
-        predictions = predictions.argmax(axis=-1)
+    cross_val = KFold(n_splits=5, shuffle=True)
+    clf = GridSearchCV(classifier, params, cv=cross_val.split(feature_vector_train), n_jobs=1)
+    clf.fit(feature_vector_train, label)
+    print('Grid Search Completed', clf.best_estimator_, clf.best_score_)
+
+
+    predictions = clf.predict(feature_vector_valid)
+
+    # # fit the training dataset on the classifier
+    # classifier.fit(feature_vector_train, label)
+    # # predict the labels on validation dataset
+    # predictions = classifier.predict(feature_vector_valid)
 
     return metrics.accuracy_score(predictions, valid_y)
 
@@ -256,18 +272,18 @@ def main():
     #preprocess data and create feature vectors:
     train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
 
-<<<<<<< HEAD
     # Naive Bayes on Ngram Level TF IDF Vectors
-    accuracy = train_model(linear_model.LogisticRegression(), train_feature_vector, train_response_vector, test_feature_vector, test_response_vector)
-    print ("NB, N-Gram Vectors: ", accuracy)
+    # accuracy = train_model(linear_model.LogisticRegression(), train_feature_vector, train_response_vector, test_feature_vector, test_response_vector)
+    # print ("NB, N-Gram Vectors: ", accuracy)
 
-    #build classifierscdxvd
-    #train_model(train_feature_vector, test_feature_vector, response_vector)
 
-=======
-    #build classifiers
-    train_model(train_feature_vector, train_response_vector, test_feature_vector, test_response_vector)
->>>>>>> d49ae0a23b5bbc9271889e316983a12e0b4705aa
+    accuracy = train_model(SGDClassifier(n_iter=8, penalty='elasticnet'), {},train_feature_vector, train_response_vector,
+                                                        test_feature_vector, test_response_vector)
+    print ("SGD: ", accuracy)
+
+    # accuracy = train_model(linear_model.LogisticRegression(), {}, train_feature_vector, train_response_vector,
+    #                                                     test_feature_vector, test_response_vector)
+    # print ("LR: ", accuracy)
 
 
     print("fin")
