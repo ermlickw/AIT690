@@ -17,7 +17,6 @@ class Classify(object):
     def __init__(self, feature_matrix=None):
         self.classifier = SGDClassifier()
         self.clf_name = 'SGD'
-        self.results = Results(config)
         self.feature_matrix = feature_matrix
         self.classifiers = {
             'Bayes': [MultinomialNB(), {'alpha': np.arange(0.0001, 0.2, 0.0001)}],
