@@ -251,23 +251,22 @@ def main():
     testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
 
     #simplify the dataset to a representative sample for the sake of processing time
-    traindf = traindf[traindf['mainclass'].apply(lambda x: x[:4])=='B29C']
-    testdf = testdf[testdf['mainclass'].apply(lambda x: x[:4])=='B29C']
+    # traindf = traindf[traindf['mainclass'].apply(lambda x: x[:4])=='B29C']
+    # testdf = testdf[testdf['mainclass'].apply(lambda x: x[:4])=='B29C']
     combineddf = traindf.append(testdf)
+    combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: strip(x[:4]))
+    print(combineddf['mainclass'].head())
 
     # #Document and class analysis:
-    # print(traindf['mainclass'].nunique())
-    # print(testdf['mainclass'].nunique())
-    # df1 = traindf['mainclass']
-    # df2 = testdf['mainclass']
-    # print('number of mainclasses of train in test')
-    # print(df1.isin(df2).value_counts())
-    # print('number of mainclasses of test in train')
-    # print(df2.isin(df1).value_counts())
-    # print('number of unique mainclasses of test not in train')
-    # print(df2[~df2.isin(df1)].nunique())
-    # print('number of unique mainclasses of train not in test')
-    # print(df1[~df1.isin(df2)].nunique())
+    df1 = traindf['mainclass'].apply(lambda x: strip(x[:4]))
+    df2 = testdf['mainclass'].apply(lambda x: strip(x[:4]))
+    print(df1.nunique())
+    print(df2.nunique())
+
+    print('number of unique mainclasses of test not in train')
+    print(df2[~df2.isin(df1)].nunique())
+    print('number of unique mainclasses of train not in test')
+    print(df1[~df1.isin(df2)].nunique())
 
     #preprocess data and create feature vectors:
     train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
@@ -281,7 +280,7 @@ def main():
 
             'Perceptron': [Perceptron(), {'alpha': np.arange(0.00001, 0.001, 0.00001)}],
 
-            'LogisticRegression': [LogisticRegression(solver='lbfgs', multi_class='multinomial'), {}],
+            'LogisticRegression': [LogisticRegression(), {}], #solver='lbfgs', multi_class='multinomial'
 
             'LDA': [LinearDiscriminantAnalysis(solver='svd'), {}],
 
