@@ -288,7 +288,7 @@ def main():
             'QDA': [QuadraticDiscriminantAnalysis(), {}],
         }
 
-    model = 'Perceptron'
+    model = 'LogisticRegression'
     accuracy = train_model(classifiers[model][0], classifiers[model][1],train_feature_vector, train_response_vector,
                                                         test_feature_vector, test_response_vector)
     print (model," ", accuracy)
