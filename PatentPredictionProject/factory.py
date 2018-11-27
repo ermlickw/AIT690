@@ -254,12 +254,12 @@ def main():
     # traindf = traindf[traindf['mainclass'].apply(lambda x: x[:4])=='B29C']
     # testdf = testdf[testdf['mainclass'].apply(lambda x: x[:4])=='B29C']
     combineddf = traindf.append(testdf)
-    combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: strip(x[:4]))
+    combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:4]).strip())
     print(combineddf['mainclass'].head())
 
     # #Document and class analysis:
-    df1 = traindf['mainclass'].apply(lambda x: strip(x[:4]))
-    df2 = testdf['mainclass'].apply(lambda x: strip(x[:4]))
+    df1 = traindf['mainclass'].apply(lambda x: (x[:4]).strip())
+    df2 = testdf['mainclass'].apply(lambda x: (x[:4]).strip())
     print(df1.nunique())
     print(df2.nunique())
 
