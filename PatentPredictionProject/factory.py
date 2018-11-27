@@ -272,18 +272,26 @@ def main():
     #preprocess data and create feature vectors:
     train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
 
-    # Naive Bayes on Ngram Level TF IDF Vectors
-    # accuracy = train_model(linear_model.LogisticRegression(), train_feature_vector, train_response_vector, test_feature_vector, test_response_vector)
-    # print ("NB, N-Gram Vectors: ", accuracy)
+    classifiers = {
+            'Bayes': [MultinomialNB(), {'alpha': np.arange(0.0001, 0.2, 0.0001)}],
 
+            'SGD': [SGDClassifier(n_iter=8, penalty='elasticnet'), {'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)}],
 
-    accuracy = train_model(SGDClassifier(n_iter=8, penalty='elasticnet'), {},train_feature_vector, train_response_vector,
+            'Passive Aggressive': [PassiveAggressiveClassifier(loss='hinge'), {}],
+
+            'Perceptron': [Perceptron(), {'alpha': np.arange(0.00001, 0.001, 0.00001)}],
+
+            'LogisticRegression': [LogisticRegression(solver='lbfgs', multi_class='multinomial'), {}],
+
+            'LDA': [LinearDiscriminantAnalysis(solver='svd'), {}],
+
+            'QDA': [QuadraticDiscriminantAnalysis(), {}],
+        }
+
+    model = 'Perceptron'
+    accuracy = train_model(classifiers[model][0], classifiers[model][1],train_feature_vector, train_response_vector,
                                                         test_feature_vector, test_response_vector)
-    print ("SGD: ", accuracy)
-
-    # accuracy = train_model(linear_model.LogisticRegression(), {}, train_feature_vector, train_response_vector,
-    #                                                     test_feature_vector, test_response_vector)
-    # print ("LR: ", accuracy)
+    print (model," ", accuracy)
 
 
     print("fin")
