@@ -251,8 +251,8 @@ def main():
     testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
 
     #simplify the dataset to a representative sample for the sake of processing time
-    # traindf = traindf[traindf['mainclass'].apply(lambda x: x[:1])=='D']
-    # testdf = testdf[testdf['mainclass'].apply(lambda x: x[:1])=='D']
+    # traindf = traindf[traindf['mainclass'].apply(lambda x: x[:1])=='H']
+    # testdf = testdf[testdf['mainclass'].apply(lambda x: x[:1])=='H']
     combineddf = traindf.append(testdf)
     combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:4]).strip())
     print(combineddf['mainclass'].head())
