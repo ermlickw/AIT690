@@ -87,7 +87,7 @@ def preprocess_dataframe(df, numbtrainrows):
     #convert to lowercase
     df.iloc[:,4:7] = df.iloc[:,4:7].apply(lambda x: x.str.lower() if(x.dtype == 'object') else x)
     #keep only first 500 word of description
-    df['description'] = df['description'].apply(lambda x: ' '.join(x.split()[:500]))
+    df['description'] = df['description'].apply(lambda x: ' '.join(x.split()[:50]))
     df['title'] = df['title'].apply(lambda x: x.replace('"',""))
     df['description'] = df['description'].apply(lambda x: x.replace('"',""))
     df['claims'] = df['claims'].apply(lambda x: x.replace('"',""))
@@ -113,8 +113,8 @@ def preprocess_dataframe(df, numbtrainrows):
         decode_error='replace',
         tokenizer=tokenize,
         norm='l2',
-        min_df=5,
-        max_features=25000
+        min_df=15,
+        max_features=10000
     )
 
     #create tfidf matrix
@@ -251,8 +251,8 @@ def main():
     testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
 
     #simplify the dataset to a representative sample for the sake of processing time
-    traindf = traindf[traindf['mainclass'].apply(lambda x: x[:1])=='D']
-    testdf = testdf[testdf['mainclass'].apply(lambda x: x[:1])=='D']
+    # traindf = traindf[traindf['mainclass'].apply(lambda x: x[:1])=='D']
+    # testdf = testdf[testdf['mainclass'].apply(lambda x: x[:1])=='D']
     combineddf = traindf.append(testdf)
     combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:4]).strip())
     print(combineddf['mainclass'].head())
