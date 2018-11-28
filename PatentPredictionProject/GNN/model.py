@@ -10,15 +10,13 @@ from __future__ import print_function
 import tensorflow as tf
 import numpy as np
 import os
-from utils import read_data
+from utils import read_data,find_node
 
 class graph2graph(object):
-    def __init__(self, sess,Ds,No,Nr,Ds_label, Dr,De_o,checkpoint_dir,epoch):
+    def __init__(self, sess,Ds,Ds_label, Dr,De_o,checkpoint_dir,epoch):
         self.sess = sess
         self.Ds = Ds
-        self.Ds_label = Ds_label
-        self.No = No
-        self.Nr =Nr
+        self.Ds_label = Ds_label       
         self.Dr = Dr
         self.De_o=De_o
         self.epoch=epoch
@@ -38,6 +36,8 @@ class graph2graph(object):
             tf.summary.histogram('histogram', var)
             
     def build_model(self):
+       self.No=find_node()
+       self.Nr =self.No*(int(self.No-1))
        self.O = tf.placeholder(tf.float32, [self.Ds,self.No], name="O")
        self.O_target=tf.placeholder(tf.float32, [self.Ds_label,self.No], name="O_target")
        # Relation Matrics R=<Rr,Rs,Ra>

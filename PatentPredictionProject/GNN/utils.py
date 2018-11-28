@@ -8,6 +8,32 @@ import numpy as np
 from scipy.spatial.distance import cosine
 import random
 
+def find_node():
+    train=np.load('train.npy')
+    test=np.load('test.npy')
+    train_label=np.load('train_label.npy')
+    test_label=np.load('test_label.npy')  
+    features=np.concatenate((train,test),axis=0)
+                           
+    labels=np.concatenate((train_label,test_label),axis=0)
+    labels=list(labels)
+    label_list=list(set(labels))  #convert label to hot vector for each sample
+    new_label_list=[]
+    for l in label_list:
+       if labels.count(l)>=4:
+           new_label_list.append(l)
+         
+    new_labels=[]
+    new_features=[]
+    for i in range(len(labels)):
+        if labels[i] in new_label_list:
+            new_labels.append(labels[i])
+            new_features.append(features[i])            
+    new_features=np.array(new_features)
+    
+    return new_features.shape[0]
+        
+        
 def read_data(self):    
     train=np.load('train.npy')
     test=np.load('test.npy')
