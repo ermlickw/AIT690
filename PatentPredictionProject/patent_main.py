@@ -11,9 +11,9 @@ from __future__ import print_function
 import time
 import tensorflow as tf
 
-from GCN_model import *
-from GCN_model.utils import *
-from GCN_model.models import *
+from GNN import *
+from GNN.utils import *
+from GNN.model import *
 
 
   # Set random seed

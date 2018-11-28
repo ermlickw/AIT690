@@ -10,7 +10,7 @@ from __future__ import print_function
 import tensorflow as tf
 import numpy as np
 import os
-from utils import read_data
+from GNN.utils import read_data
 
 class graph2graph(object):
     def __init__(self, sess,Ds,No,Nr,Ds_label, Dr,De_o,checkpoint_dir,epoch):
