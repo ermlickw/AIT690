@@ -251,8 +251,8 @@ def main():
     testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
 
     #simplify the dataset to a representative sample for the sake of processing time
-    # traindf = traindf[traindf['mainclass'].apply(lambda x: x[:4])=='B29C']
-    # testdf = testdf[testdf['mainclass'].apply(lambda x: x[:4])=='B29C']
+    traindf = traindf[traindf['mainclass'].apply(lambda x: x[:1])=='D']
+    testdf = testdf[testdf['mainclass'].apply(lambda x: x[:1])=='D']
     combineddf = traindf.append(testdf)
     combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:4]).strip())
     print(combineddf['mainclass'].head())
@@ -262,6 +262,7 @@ def main():
     df2 = testdf['mainclass'].apply(lambda x: (x[:4]).strip())
     print(df1.nunique())
     print(df2.nunique())
+    print(len(combineddf))
 
     print('number of unique mainclasses of test not in train')
     print(df2[~df2.isin(df1)].nunique())
