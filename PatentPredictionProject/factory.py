@@ -27,7 +27,7 @@ from nltk.tokenize import RegexpTokenizer
 # from keras.preprocessing.text import Tokenizer
 # from keras.preprocessing import text, sequence
 from nltk.corpus import stopwords
-import pickle
+# import pickle
 
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -48,7 +48,7 @@ from sklearn.model_selection import learning_curve
 from sklearn.metrics import confusion_matrix
 import itertools
 import numpy as np
-import dill as pickle
+# import dill as pickle
 
 def tokenize(txt):
     """
@@ -102,7 +102,7 @@ def print_cm(cm, classes,
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     # plt.show()
-    fig1.savefig(title,dpi=100)
+    fig1.savefig("CMs/"+title,dpi=100)
 
 def preprocess_dataframe(df, numbtrainrows):
     '''
@@ -253,7 +253,7 @@ def preprocess_dataframe(df, numbtrainrows):
 
     return   train_feature_vector, train_response_vector, test_feature_vector, test_response_vector
 
-def train_model(classifier, params, feature_vector_train, label, feature_vector_valid, valid_y):
+def train_model(classifier, params, feature_vector_train, label, feature_vector_valid, valid_y, model, responses):
 
 
     cross_val = KFold(n_splits=5, shuffle=True)
@@ -263,13 +263,19 @@ def train_model(classifier, params, feature_vector_train, label, feature_vector_
 
 
     predictions = clf.predict(feature_vector_valid)
-
+    labels = list(set(responses))
 
     acc = metrics.accuracy_score(valid_y, predictions)
     prec = metrics.precision_score(valid_y, predictions, average='micro')
     cr = metrics.classification_report(valid_y,predictions)
-    cm = metrics.confusion_matrix(valid_y,predictions)
+    cm = metrics.confusion_matrix(valid_y,predictions, labels=labels)
     f1 = metrics.f1_score(valid_y,predictions, average='micro')
+
+    #print out performance metrics
+    print (model,"|   Accuracy:", acc, "|  Micro-averaged Precision:", prec, "| Micro-Averaged F1 Score: ", f1)
+    print("Classification Report: \n",cr)
+    print("Confusion_Matrix: \n",cm)
+    print_cm(cm, labels,True,model)
     return acc,prec, cr, cm, f1
 
 
@@ -308,11 +314,15 @@ def main():
 
     if not(load_data and os.path.isfile('train.npy') and os.path.isfile('train_label.npy') and os.path.isfile('test.npy') and os.path.isfile('test_label.npy')):
         train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
+        then=time.time()
+        print("Feature and Response vectors CREATED in ",round(then-now,2), "seconds")
     else:
         train_feature_vector = np.load('train.npy')
         train_response_vector = np.load('train_label.npy')
         test_feature_vector = np.load('test.npy')
         test_response_vector = np.load('test_label.npy')
+        then=time.time()
+        print("Feature and Response Vectors LOADED in",round(then-now,2), "seconds")
 
 
     classifiers = {
@@ -331,22 +341,23 @@ def main():
             'QDA': [QuadraticDiscriminantAnalysis(), {}],
         }
 
-    model = 'LogisticRegression'
-    accuracy, prec, cr, cm, f1 = train_model(classifiers[model][0], classifiers[model][1],
-                                                        train_feature_vector, train_response_vector,
-                                                        test_feature_vector, test_response_vector)
-    print (model,"|   Accuracy:", accuracy, "|  Micro-averaged Precision:", prec, "| Micro-Averaged F1 Score: ", f1)
-    print("Classification Report: \n",cr)
-    print("Confusion_Matrix: \n",cm)
-    labels = list(set(combineddf['mainclass']))
-    then=time.time()
-    print_cm(cm, labels,True,model)
-    print(model," finished in ",then-now, "seconds")
+    microprecision = {}
+    for model in classifiers.keys():
+        acc, prec, cr, cm, f1 = train_model(classifiers[model][0], classifiers[model][1],
+                                                            train_feature_vector, train_response_vector,
+                                                            test_feature_vector, test_response_vector,
+                                                            model,combineddf['mainclass'])
+        then=time.time()
+        microprecision.update({model:prec})
+        print(model, "finished in ", round(then-now,2), "seconds")
 
-
+    #print final results
+    print('\n')
+    for item in microprecision:
+        print(item)
 
 if __name__ == '__main__':
     now=time.time()
     main()
     then=time.time()
-    print("script finished in ",then-now, "seconds")
+    print("script finished in ",round(then-now,2), "seconds")
