@@ -11,6 +11,7 @@ $
 '''
 import os
 import sys
+import time
 import nltk
 import sys
 import seaborn as sns
@@ -23,8 +24,8 @@ import matplotlib.pyplot as plt
 
 from nltk.stem.porter import PorterStemmer
 from nltk.tokenize import RegexpTokenizer
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing import text, sequence
+# from keras.preprocessing.text import Tokenizer
+# from keras.preprocessing import text, sequence
 from nltk.corpus import stopwords
 import pickle
 
@@ -45,6 +46,7 @@ from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import learning_curve
 from sklearn.metrics import confusion_matrix
+import itertools
 import numpy as np
 import dill as pickle
 
@@ -73,7 +75,34 @@ def embeddingtokenize(txt):
     word_index = tokens.word_index
     return tokens, word_index
 
+def print_cm(cm, classes,
+              normalize=False,
+              title='Confusion matrix',
+              cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    """
+    fig1=plt.figure(figsize=(20,20))
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
 
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    # plt.show()
+    fig1.savefig(title,dpi=100)
 
 def preprocess_dataframe(df, numbtrainrows):
     '''
@@ -139,11 +168,12 @@ def preprocess_dataframe(df, numbtrainrows):
                     abstract_tfidf_df,
                     description_tfidf_df,
                     claims_tfidf_df], axis=1)
-
+    #memory drop
     title_tfidf_df = None
     abstract_tfidf_df = None
     description_tfidf_df = None
     claims_tfidf_df = None
+
     # add word embedding vectors from gold standard paper -> 100 dimensions
     # https://hpi.de/naumann/projects/web-science/deep-learning-for-text/patent-classification.html
     # load the pre-trained word-embedding vectors
@@ -223,7 +253,7 @@ def preprocess_dataframe(df, numbtrainrows):
 
     return   train_feature_vector, train_response_vector, test_feature_vector, test_response_vector
 
-def train_model(classifier, params, feature_vector_train, label, feature_vector_valid, valid_y, is_neural_net=False):
+def train_model(classifier, params, feature_vector_train, label, feature_vector_valid, valid_y):
 
 
     cross_val = KFold(n_splits=5, shuffle=True)
@@ -234,12 +264,13 @@ def train_model(classifier, params, feature_vector_train, label, feature_vector_
 
     predictions = clf.predict(feature_vector_valid)
 
-    # # fit the training dataset on the classifier
-    # classifier.fit(feature_vector_train, label)
-    # # predict the labels on validation dataset
-    # predictions = classifier.predict(feature_vector_valid)
 
-    return metrics.accuracy_score(predictions, valid_y)
+    acc = metrics.accuracy_score(valid_y, predictions)
+    prec = metrics.precision_score(valid_y, predictions, average='micro')
+    cr = metrics.classification_report(valid_y,predictions)
+    cm = metrics.confusion_matrix(valid_y,predictions)
+    f1 = metrics.f1_score(valid_y,predictions, average='micro')
+    return acc,prec, cr, cm, f1
 
 
 def main():
@@ -250,27 +281,39 @@ def main():
     traindf = pd.read_csv("WIPO-alpha-train.csv") # for testing limit number of rows (46324 in total for taining)
     testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
 
-    #simplify the dataset to a representative sample for the sake of processing time
-    # traindf = traindf[traindf['mainclass'].apply(lambda x: x[:1])=='H']
-    # testdf = testdf[testdf['mainclass'].apply(lambda x: x[:1])=='H']
+    # simplify the dataset to a representative sample for the sake of processing time
+    traindf = traindf[traindf['mainclass'].apply(lambda x: x[:3])=='G09']
+    testdf = testdf[testdf['mainclass'].apply(lambda x: x[:3])=='G09']
+
+    # combine and select subclass
     combineddf = traindf.append(testdf)
     combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:4]).strip())
-    print(combineddf['mainclass'].head())
+    # print(combineddf['mainclass'].head())
 
-    # #Document and class analysis:
-    df1 = traindf['mainclass'].apply(lambda x: (x[:4]).strip())
-    df2 = testdf['mainclass'].apply(lambda x: (x[:4]).strip())
-    print(df1.nunique())
-    print(df2.nunique())
-    print(len(combineddf))
+    #Document and class analysis:
+    # df1 = traindf['mainclass'].apply(lambda x: (x[:4]).strip())
+    # df2 = testdf['mainclass'].apply(lambda x: (x[:4]).strip())
+    # print(df1.nunique())
+    # print(df2.nunique())
+    # print(len(combineddf))
+    #
+    # print('number of unique mainclasses of test not in train')
+    # print(df2[~df2.isin(df1)].nunique())
+    # print('number of unique mainclasses of train not in test')
+    # print(df1[~df1.isin(df2)].nunique())
 
-    print('number of unique mainclasses of test not in train')
-    print(df2[~df2.isin(df1)].nunique())
-    print('number of unique mainclasses of train not in test')
-    print(df1[~df1.isin(df2)].nunique())
 
-    #preprocess data and create feature vectors:
-    train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
+    #preprocess data and create feature vectors OR load created data:
+    load_data = True
+
+    if not(load_data and os.path.isfile('train.npy') and os.path.isfile('train_label.npy') and os.path.isfile('test.npy') and os.path.isfile('test_label.npy')):
+        train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
+    else:
+        train_feature_vector = np.load('train.npy')
+        train_response_vector = np.load('train_label.npy')
+        test_feature_vector = np.load('test.npy')
+        test_response_vector = np.load('test_label.npy')
+
 
     classifiers = {
             'Bayes': [MultinomialNB(), {'alpha': np.arange(0.0001, 0.2, 0.0001)}],
@@ -281,7 +324,7 @@ def main():
 
             'Perceptron': [Perceptron(), {'alpha': np.arange(0.00001, 0.001, 0.00001)}],
 
-            'LogisticRegression': [LogisticRegression(), {}], #solver='lbfgs', multi_class='multinomial'
+            'LogisticRegression': [LogisticRegression(solver='lbfgs', multi_class='multinomial'), {}],
 
             'LDA': [LinearDiscriminantAnalysis(solver='svd'), {}],
 
@@ -289,12 +332,21 @@ def main():
         }
 
     model = 'LogisticRegression'
-    accuracy = train_model(classifiers[model][0], classifiers[model][1],train_feature_vector, train_response_vector,
+    accuracy, prec, cr, cm, f1 = train_model(classifiers[model][0], classifiers[model][1],
+                                                        train_feature_vector, train_response_vector,
                                                         test_feature_vector, test_response_vector)
-    print (model," ", accuracy)
+    print (model,"|   Accuracy:", accuracy, "|  Micro-averaged Precision:", prec, "| Micro-Averaged F1 Score: ", f1)
+    print("Classification Report: \n",cr)
+    print("Confusion_Matrix: \n",cm)
+    labels = list(set(combineddf['mainclass']))
+    then=time.time()
+    print_cm(cm, labels,True,model)
+    print(model," finished in ",then-now, "seconds")
 
 
-    print("fin")
 
 if __name__ == '__main__':
+    now=time.time()
     main()
+    then=time.time()
+    print("script finished in ",then-now, "seconds")
