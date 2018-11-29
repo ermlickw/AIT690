@@ -27,7 +27,7 @@ from nltk.tokenize import RegexpTokenizer
 # from keras.preprocessing.text import Tokenizer
 # from keras.preprocessing import text, sequence
 from nltk.corpus import stopwords
-# import pickle
+import pickle
 
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -253,18 +253,32 @@ def preprocess_dataframe(df, numbtrainrows):
 
     return   train_feature_vector, train_response_vector, test_feature_vector, test_response_vector
 
-def train_model(classifier, params, feature_vector_train, label, feature_vector_valid, valid_y, model, responses):
+def train_model(classifier, params,
+                feature_vector_train, label,
+                feature_vector_valid, valid_y,
+                model, responses,
+                load_models):
 
 
-    cross_val = KFold(n_splits=5, shuffle=True)
-    clf = GridSearchCV(classifier, params, cv=cross_val.split(feature_vector_train), n_jobs=1)
-    clf.fit(feature_vector_train, label)
-    print('Grid Search Completed', clf.best_estimator_, clf.best_score_)
+
+    if load_models == False:
+        cross_val = KFold(n_splits=5, shuffle=True)
+        clf = GridSearchCV(classifier, params, cv=cross_val.split(feature_vector_train), n_jobs=1)
+        clf.fit(feature_vector_train, label)
+        print('Grid Search Completed', clf.best_estimator_, clf.best_score_)
+
+        #save model:
+        # np.save("Classifiers/"+model,clf.best_estimator_)
+        pickle.dump(clf.best_estimator_, open("Classifiers/"+model, 'wb'))
+    else: #load model
+        # clf = np.load("Classifiers/"+model+".npy")
+        clf = pickle.load(open("Classifiers/"+model,'rb'))
 
 
     predictions = clf.predict(feature_vector_valid)
-    labels = list(set(responses))
 
+    #create performance metrics
+    labels = list(set(responses))
     acc = metrics.accuracy_score(valid_y, predictions)
     prec = metrics.precision_score(valid_y, predictions, average='micro')
     cr = metrics.classification_report(valid_y,predictions)
@@ -311,8 +325,9 @@ def main():
 
     #preprocess data and create feature vectors OR load created data:
     load_data = True
+    load_models = True
 
-    if not(load_data and os.path.isfile('train.npy') and os.path.isfile('train_label.npy') and os.path.isfile('test.npy') and os.path.isfile('test_label.npy')):
+    if load_data==False and not(os.path.isfile('train.npy') and os.path.isfile('train_label.npy') and os.path.isfile('test.npy') and os.path.isfile('test_label.npy')):
         train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
         then=time.time()
         print("Feature and Response vectors CREATED in ",round(then-now,2), "seconds")
@@ -346,15 +361,17 @@ def main():
         acc, prec, cr, cm, f1 = train_model(classifiers[model][0], classifiers[model][1],
                                                             train_feature_vector, train_response_vector,
                                                             test_feature_vector, test_response_vector,
-                                                            model,combineddf['mainclass'])
+                                                            model,combineddf['mainclass'], load_models)
         then=time.time()
         microprecision.update({model:prec})
         print(model, "finished in ", round(then-now,2), "seconds")
 
     #print final results
-    print('\n')
-    for item in microprecision:
-        print(item)
+    print('\n FINAL RESULTS | MICRO-PRECISION')
+    d_view = [ (v,k) for k,v in microprecision.items() ]
+    d_view.sort(reverse=True)
+    for v,k in d_view:
+        print(k,round(v,3))
 
 if __name__ == '__main__':
     now=time.time()
