@@ -346,8 +346,6 @@ def main():
 
             'LDA': [LinearDiscriminantAnalysis(solver='svd'), {}],
 
-            'QDA': [QuadraticDiscriminantAnalysis(), {}],
-
             'Bayes': [MultinomialNB(), {}], #'alpha': np.arange(0.0001, 0.2, 0.0001)
 
             'SGD': [SGDClassifier(n_iter=8, penalty='elasticnet'), {}], #'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)
