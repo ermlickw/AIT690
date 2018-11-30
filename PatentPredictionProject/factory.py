@@ -143,7 +143,7 @@ def preprocess_dataframe(df, numbtrainrows):
         tokenizer=tokenize,
         norm='l2',
         min_df=15,
-        max_features=10000
+        max_features=1000
     )
 
     #create tfidf matrix
@@ -219,8 +219,8 @@ def preprocess_dataframe(df, numbtrainrows):
     # top percentile variance selection
     # selector = SelectPercentile(f_classif, percentile=80)
     # df_feature_vector = selector.fit_transform(df_feature_vector,response_vector)
-    #
-    # #PCA on feature_matrix
+
+    #PCA on feature_matrix
     # pca = PCA(n_components=100)
     # df_feature_vector = pca.fit_transform(df_feature_vector)
 
@@ -246,10 +246,10 @@ def preprocess_dataframe(df, numbtrainrows):
     response_vector = None
 
     #save the processed dataset
-    np.save('train.npy',train_feature_vector)
-    np.save('train_label.npy',train_response_vector)
-    np.save('test.npy',test_feature_vector)
-    np.save('test_label.npy',test_response_vector)
+    np.save('train-red.npy',train_feature_vector)
+    np.save('train_label-red.npy',train_response_vector)
+    np.save('test-red.npy',test_feature_vector)
+    np.save('test_label-red.npy',test_response_vector)
 
     return   train_feature_vector, train_response_vector, test_feature_vector, test_response_vector
 
@@ -282,14 +282,14 @@ def train_model(classifier, params,
     acc = metrics.accuracy_score(valid_y, predictions)
     prec = metrics.precision_score(valid_y, predictions, average='micro')
     cr = metrics.classification_report(valid_y,predictions)
-    cm = metrics.confusion_matrix(valid_y,predictions, labels=labels)
+    # cm = metrics.confusion_matrix(valid_y,predictions, labels=labels)
     f1 = metrics.f1_score(valid_y,predictions, average='micro')
 
     #print out performance metrics
     print (model,"|   Accuracy:", acc, "|  Micro-averaged Precision:", prec, "| Micro-Averaged F1 Score: ", f1)
     print("Classification Report: \n",cr)
-    print("Confusion_Matrix: \n",cm)
-    print_cm(cm, labels,True,model)
+    # print("Confusion_Matrix: \n",cm)
+    # print_cm(cm, labels,True,model)
     return acc,prec, cr, cm, f1
 
 
@@ -302,8 +302,8 @@ def main():
     testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
 
     # simplify the dataset to a representative sample for the sake of processing time
-    traindf = traindf[traindf['mainclass'].apply(lambda x: x[:3])=='G09']
-    testdf = testdf[testdf['mainclass'].apply(lambda x: x[:3])=='G09']
+    # traindf = traindf[traindf['mainclass'].apply(lambda x: x[:3])=='G09']
+    # testdf = testdf[testdf['mainclass'].apply(lambda x: x[:3])=='G09']
 
     # combine and select subclass
     combineddf = traindf.append(testdf)
@@ -316,7 +316,7 @@ def main():
     # print(df1.nunique())
     # print(df2.nunique())
     # print(len(combineddf))
-    #
+
     # print('number of unique mainclasses of test not in train')
     # print(df2[~df2.isin(df1)].nunique())
     # print('number of unique mainclasses of train not in test')
@@ -325,35 +325,36 @@ def main():
 
     #preprocess data and create feature vectors OR load created data:
     load_data = True
-    load_models = True
+    load_models = False
 
-    if load_data==False and not(os.path.isfile('train.npy') and os.path.isfile('train_label.npy') and os.path.isfile('test.npy') and os.path.isfile('test_label.npy')):
+    if load_data==False or not(os.path.isfile('train.npy') or os.path.isfile('train_label.npy') or os.path.isfile('test.npy') or os.path.isfile('test_label.npy')):
         train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
         then=time.time()
         print("Feature and Response vectors CREATED in ",round(then-now,2), "seconds")
     else:
-        train_feature_vector = np.load('train.npy')
-        train_response_vector = np.load('train_label.npy')
-        test_feature_vector = np.load('test.npy')
-        test_response_vector = np.load('test_label.npy')
+        train_feature_vector = np.load('train-red.npy')
+        train_response_vector = np.load('train_label-red.npy')
+        test_feature_vector = np.load('test-red.npy')
+        test_response_vector = np.load('test_label-red.npy')
         then=time.time()
         print("Feature and Response Vectors LOADED in",round(then-now,2), "seconds")
 
 
     classifiers = {
-            'Bayes': [MultinomialNB(), {'alpha': np.arange(0.0001, 0.2, 0.0001)}],
-
-            'SGD': [SGDClassifier(n_iter=8, penalty='elasticnet'), {'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)}],
-
-            'Passive Aggressive': [PassiveAggressiveClassifier(loss='hinge'), {}],
-
-            'Perceptron': [Perceptron(), {'alpha': np.arange(0.00001, 0.001, 0.00001)}],
 
             'LogisticRegression': [LogisticRegression(solver='lbfgs', multi_class='multinomial'), {}],
 
             'LDA': [LinearDiscriminantAnalysis(solver='svd'), {}],
 
             'QDA': [QuadraticDiscriminantAnalysis(), {}],
+
+            'Bayes': [MultinomialNB(), {}], #'alpha': np.arange(0.0001, 0.2, 0.0001)
+
+            'SGD': [SGDClassifier(n_iter=8, penalty='elasticnet'), {}], #'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)
+
+            'Passive Aggressive': [PassiveAggressiveClassifier(loss='hinge'), {}],
+
+            'Perceptron': [Perceptron(), {}], #'alpha': np.arange(0.00001, 0.001, 0.00001)
         }
 
     microprecision = {}
@@ -364,7 +365,7 @@ def main():
                                                             model,combineddf['mainclass'], load_models)
         then=time.time()
         microprecision.update({model:prec})
-        print(model, "finished in ", round(then-now,2), "seconds")
+        print(model, "finished in ", round(then-now,2)/60, "minutes")
 
     #print final results
     print('\n FINAL RESULTS | MICRO-PRECISION')
@@ -375,6 +376,7 @@ def main():
 
 if __name__ == '__main__':
     now=time.time()
+    print('scripted started at ',now)
     main()
     then=time.time()
-    print("script finished in ",round(then-now,2), "seconds")
+    print("script finished in ",round(then-now,2)/60, "minutes")
