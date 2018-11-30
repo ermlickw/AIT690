@@ -142,7 +142,7 @@ def preprocess_dataframe(df, numbtrainrows):
         decode_error='replace',
         tokenizer=tokenize,
         norm='l2',
-        min_df=15,
+        min_df=5,
         max_features=1000
     )
 
@@ -246,10 +246,10 @@ def preprocess_dataframe(df, numbtrainrows):
     response_vector = None
 
     #save the processed dataset
-    np.save('train-red.npy',train_feature_vector)
-    np.save('train_label-red.npy',train_response_vector)
-    np.save('test-red.npy',test_feature_vector)
-    np.save('test_label-red.npy',test_response_vector)
+    np.save('train-D.npy',train_feature_vector)
+    np.save('train_label-D.npy',train_response_vector)
+    np.save('test-D',test_feature_vector)
+    np.save('test_label-D.npy',test_response_vector)
 
     return   train_feature_vector, train_response_vector, test_feature_vector, test_response_vector
 
@@ -269,10 +269,10 @@ def train_model(classifier, params,
 
         #save model:
         # np.save("Classifiers/"+model,clf.best_estimator_)
-        pickle.dump(clf.best_estimator_, open("Classifiers/"+model, 'wb'))
+        pickle.dump(clf.best_estimator_, open("Classifiers/"+model+'-D', 'wb'))
     else: #load model
         # clf = np.load("Classifiers/"+model+".npy")
-        clf = pickle.load(open("Classifiers/"+model,'rb'))
+        clf = pickle.load(open("Classifiers/"+model+'-D','rb'))
 
 
     predictions = clf.predict(feature_vector_valid)
@@ -282,13 +282,13 @@ def train_model(classifier, params,
     acc = metrics.accuracy_score(valid_y, predictions)
     prec = metrics.precision_score(valid_y, predictions, average='micro')
     cr = metrics.classification_report(valid_y,predictions)
-    # cm = metrics.confusion_matrix(valid_y,predictions, labels=labels)
+    cm = metrics.confusion_matrix(valid_y,predictions, labels=labels)
     f1 = metrics.f1_score(valid_y,predictions, average='micro')
 
     #print out performance metrics
     print (model,"|   Accuracy:", acc, "|  Micro-averaged Precision:", prec, "| Micro-Averaged F1 Score: ", f1)
     print("Classification Report: \n",cr)
-    # print("Confusion_Matrix: \n",cm)
+    print("Confusion_Matrix: \n",cm)
     # print_cm(cm, labels,True,model)
     return acc,prec, cr, cm, f1
 
@@ -302,8 +302,8 @@ def main():
     testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
 
     # simplify the dataset to a representative sample for the sake of processing time
-    # traindf = traindf[traindf['mainclass'].apply(lambda x: x[:3])=='G09']
-    # testdf = testdf[testdf['mainclass'].apply(lambda x: x[:3])=='G09']
+    traindf = traindf[traindf['mainclass'].apply(lambda x: x[:1])=='D']
+    testdf = testdf[testdf['mainclass'].apply(lambda x: x[:1])=='D']
 
     # combine and select subclass
     combineddf = traindf.append(testdf)
@@ -311,31 +311,31 @@ def main():
     # print(combineddf['mainclass'].head())
 
     #Document and class analysis:
-    # df1 = traindf['mainclass'].apply(lambda x: (x[:4]).strip())
-    # df2 = testdf['mainclass'].apply(lambda x: (x[:4]).strip())
-    # print(df1.nunique())
-    # print(df2.nunique())
-    # print(len(combineddf))
+    df1 = traindf['mainclass'].apply(lambda x: (x[:4]).strip())
+    df2 = testdf['mainclass'].apply(lambda x: (x[:4]).strip())
+    print(df1.nunique())
+    print(df2.nunique())
+    print(len(combineddf))
 
-    # print('number of unique mainclasses of test not in train')
-    # print(df2[~df2.isin(df1)].nunique())
-    # print('number of unique mainclasses of train not in test')
-    # print(df1[~df1.isin(df2)].nunique())
+    print('number of unique mainclasses of test not in train')
+    print(df2[~df2.isin(df1)].nunique())
+    print('number of unique mainclasses of train not in test')
+    print(df1[~df1.isin(df2)].nunique())
 
 
     #preprocess data and create feature vectors OR load created data:
     load_data = True
-    load_models = False
+    load_models = True
 
     if load_data==False or not(os.path.isfile('train.npy') or os.path.isfile('train_label.npy') or os.path.isfile('test.npy') or os.path.isfile('test_label.npy')):
         train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
         then=time.time()
         print("Feature and Response vectors CREATED in ",round(then-now,2), "seconds")
     else:
-        train_feature_vector = np.load('train-red.npy')
-        train_response_vector = np.load('train_label-red.npy')
-        test_feature_vector = np.load('test-red.npy')
-        test_response_vector = np.load('test_label-red.npy')
+        train_feature_vector = np.load('train-D.npy')
+        train_response_vector = np.load('train_label-D.npy')
+        test_feature_vector = np.load('test-D.npy')
+        test_response_vector = np.load('test_label-D.npy')
         then=time.time()
         print("Feature and Response Vectors LOADED in",round(then-now,2), "seconds")
 
@@ -346,13 +346,13 @@ def main():
 
             'LDA': [LinearDiscriminantAnalysis(solver='svd'), {}],
 
-            'Bayes': [MultinomialNB(), {}], #'alpha': np.arange(0.0001, 0.2, 0.0001)
+            'Bayes': [MultinomialNB(), {'alpha': np.arange(0.0001, 0.2, 0.0001)}], #
 
-            'SGD': [SGDClassifier(n_iter=8, penalty='elasticnet'), {}], #'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)
+            'SGD': [SGDClassifier(n_iter=8, penalty='elasticnet'), {'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)}], #
 
             'Passive Aggressive': [PassiveAggressiveClassifier(loss='hinge'), {}],
 
-            'Perceptron': [Perceptron(), {}], #'alpha': np.arange(0.00001, 0.001, 0.00001)
+            'Perceptron': [Perceptron(), {'alpha': np.arange(0.00001, 0.001, 0.00001)}], #
         }
 
     microprecision = {}
