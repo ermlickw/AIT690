@@ -133,7 +133,7 @@ def preprocess_dataframe(df, numbtrainrows):
     # print((df[df['mainclass'].apply(lambda x: x[:4])=='B29C'])['mainclass'].nunique())
 
     #prep model
-    n_grams = 1
+    n_grams = 3
     feature_model = TfidfVectorizer(
         ngram_range=(1, n_grams),
         stop_words='english',
@@ -142,8 +142,8 @@ def preprocess_dataframe(df, numbtrainrows):
         decode_error='replace',
         tokenizer=tokenize,
         norm='l2',
-        min_df=5,
-        max_features=1000
+        min_df=1,
+        max_features=2000
     )
 
     #create tfidf matrix
@@ -220,13 +220,13 @@ def preprocess_dataframe(df, numbtrainrows):
     # selector = SelectPercentile(f_classif, percentile=80)
     # df_feature_vector = selector.fit_transform(df_feature_vector,response_vector)
 
-    #PCA on feature_matrix
-    # pca = PCA(n_components=100)
-    # df_feature_vector = pca.fit_transform(df_feature_vector)
-
     #SVD instead -latent semantic analysis
     # SVDtrunc = TruncatedSVD(n_components=100)
     # df_feature_vector = SVDtrunc.fit_transform(df_feature_vector)
+
+    #PCA on feature_matrix
+    pca = PCA(n_components=100)
+    df_feature_vector = pca.fit_transform(df_feature_vector)
 
     #NZV on feature matrix
     # df_feature_vector = SelectKBest(chi2, k=int(0.05*df_feature_vector.shape[1])).fit_transform(df_feature_vector, response_vector)
@@ -234,7 +234,6 @@ def preprocess_dataframe(df, numbtrainrows):
     #another selection method - top percentile summation
     # selector = SelectPercentile(f_classif, percentile=80)
     # df_feature_vector = selector.fit_transform(df_feature_vector,response_vector)
-
 
     #assign to train and test vectors and labels
     df_feature_vector = pd.DataFrame(df_feature_vector)
@@ -324,8 +323,8 @@ def main():
 
 
     #preprocess data and create feature vectors OR load created data:
-    load_data = True
-    load_models = True
+    load_data = False
+    load_models = False
 
     if load_data==False or not(os.path.isfile('train.npy') or os.path.isfile('train_label.npy') or os.path.isfile('test.npy') or os.path.isfile('test_label.npy')):
         train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
@@ -344,15 +343,15 @@ def main():
 
             'LogisticRegression': [LogisticRegression(solver='lbfgs', multi_class='multinomial'), {}],
 
-            'LDA': [LinearDiscriminantAnalysis(solver='svd'), {}],
-
-            'Bayes': [MultinomialNB(), {'alpha': np.arange(0.0001, 0.2, 0.0001)}], #
-
-            'SGD': [SGDClassifier(n_iter=8, penalty='elasticnet'), {'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)}], #
-
-            'Passive Aggressive': [PassiveAggressiveClassifier(loss='hinge'), {}],
-
-            'Perceptron': [Perceptron(), {'alpha': np.arange(0.00001, 0.001, 0.00001)}], #
+            # 'LDA': [LinearDiscriminantAnalysis(solver='svd'), {}],
+            #
+            # 'Bayes': [MultinomialNB(), {'alpha': np.arange(0.0001, 0.2, 0.0001)}], #
+            #
+            # 'SGD': [SGDClassifier(n_iter=8, penalty='elasticnet'), {'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)}], #
+            #
+            # 'Passive Aggressive': [PassiveAggressiveClassifier(loss='hinge'), {}],
+            #
+            # 'Perceptron': [Perceptron(), {'alpha': np.arange(0.00001, 0.001, 0.00001)}], #
         }
 
     microprecision = {}
