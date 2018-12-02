@@ -11,3 +11,7 @@ train.npy
 train_label.npy
 test.npy
 test_label.npy
+train-red.npy
+train_label-red.npy
+test-red.npy
+test_label-red.npy
