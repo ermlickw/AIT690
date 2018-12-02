@@ -133,7 +133,7 @@ def preprocess_dataframe(df, numbtrainrows):
     # print((df[df['mainclass'].apply(lambda x: x[:4])=='B29C'])['mainclass'].nunique())
 
     #prep model
-    n_grams = 3
+    n_grams = 1
     feature_model = TfidfVectorizer(
         ngram_range=(1, n_grams),
         stop_words='english',
@@ -225,8 +225,8 @@ def preprocess_dataframe(df, numbtrainrows):
     # df_feature_vector = SVDtrunc.fit_transform(df_feature_vector)
 
     #PCA on feature_matrix
-    pca = PCA(n_components=100)
-    df_feature_vector = pca.fit_transform(df_feature_vector)
+    # pca = PCA(n_components=100)
+    # df_feature_vector = pca.fit_transform(df_feature_vector)
 
     #NZV on feature matrix
     # df_feature_vector = SelectKBest(chi2, k=int(0.05*df_feature_vector.shape[1])).fit_transform(df_feature_vector, response_vector)
@@ -280,6 +280,7 @@ def train_model(classifier, params,
     labels = list(set(responses))
     acc = metrics.accuracy_score(valid_y, predictions)
     prec = metrics.precision_score(valid_y, predictions, average='micro')
+    recall = metrics.recall_score(valid_y, predictions, average='micro')
     cr = metrics.classification_report(valid_y,predictions)
     cm = metrics.confusion_matrix(valid_y,predictions, labels=labels)
     f1 = metrics.f1_score(valid_y,predictions, average='micro')
@@ -287,9 +288,9 @@ def train_model(classifier, params,
     #print out performance metrics
     print (model,"|   Accuracy:", acc, "|  Micro-averaged Precision:", prec, "| Micro-Averaged F1 Score: ", f1)
     print("Classification Report: \n",cr)
-    print("Confusion_Matrix: \n",cm)
-    # print_cm(cm, labels,True,model)
-    return acc,prec, cr, cm, f1
+    # print("Confusion_Matrix: \n",cm)
+    print_cm(cm, labels,True,model)
+    return acc,prec, recall, cr, cm, f1
 
 
 def main():
@@ -307,7 +308,7 @@ def main():
     # combine and select subclass
     combineddf = traindf.append(testdf)
     combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:4]).strip())
-    # print(combineddf['mainclass'].head())
+    print(combineddf['mainclass'].head())
 
     #Document and class analysis:
     df1 = traindf['mainclass'].apply(lambda x: (x[:4]).strip())
@@ -319,6 +320,7 @@ def main():
     print('number of unique mainclasses of test not in train')
     print(df2[~df2.isin(df1)].nunique())
     print('number of unique mainclasses of train not in test')
+    print(df1[~df1.isin(df2)].nunique())
     print(df1[~df1.isin(df2)].nunique())
 
 
@@ -343,33 +345,33 @@ def main():
 
             'LogisticRegression': [LogisticRegression(solver='lbfgs', multi_class='multinomial'), {}],
 
-            # 'LDA': [LinearDiscriminantAnalysis(solver='svd'), {}],
+            'LDA': [LinearDiscriminantAnalysis(solver='svd'), {}],
             #
             # 'Bayes': [MultinomialNB(), {'alpha': np.arange(0.0001, 0.2, 0.0001)}], #
             #
-            # 'SGD': [SGDClassifier(n_iter=8, penalty='elasticnet'), {'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)}], #
+            'SGD': [SGDClassifier(n_iter=8, penalty='elasticnet'), {'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)}], #
             #
-            # 'Passive Aggressive': [PassiveAggressiveClassifier(loss='hinge'), {}],
+            'Passive Aggressive': [PassiveAggressiveClassifier(loss='hinge'), {}],
             #
-            # 'Perceptron': [Perceptron(), {'alpha': np.arange(0.00001, 0.001, 0.00001)}], #
+            'Perceptron': [Perceptron(), {'alpha': np.arange(0.00001, 0.001, 0.00001)}], #
         }
 
     microprecision = {}
     for model in classifiers.keys():
-        acc, prec, cr, cm, f1 = train_model(classifiers[model][0], classifiers[model][1],
+        acc, prec,recall, cr, cm, f1 = train_model(classifiers[model][0], classifiers[model][1],
                                                             train_feature_vector, train_response_vector,
                                                             test_feature_vector, test_response_vector,
                                                             model,combineddf['mainclass'], load_models)
         then=time.time()
-        microprecision.update({model:prec})
+        microprecision.update({model:[round(acc,2), round(prec,2),round(recall,2), round(f1,2)]})
         print(model, "finished in ", round(then-now,2)/60, "minutes")
 
     #print final results
-    print('\n FINAL RESULTS | MICRO-PRECISION')
+    print('\n FINAL RESULTS | ACC | MACRO-PRECISION | MACRO-RECALL | MACRO-F1')
     d_view = [ (v,k) for k,v in microprecision.items() ]
     d_view.sort(reverse=True)
     for v,k in d_view:
-        print(k,round(v,3))
+        print(k,v)
 
 if __name__ == '__main__':
     now=time.time()
