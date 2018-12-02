@@ -14,12 +14,13 @@ import tensorflow as tf
 
 
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('--epoch', type=int, default=30, help='number of training epochs')
-parser.add_argument('--Ds', type=int, default=3494,help='The feature Dimention')
-parser.add_argument('--Ds_label', type=int, default=54,help='The State Dimention')
+parser.add_argument('--epoch', type=int, default=300, help='number of training epochs')
+parser.add_argument('--Ds', type=int, default=100,help='The feature Dimention')
+parser.add_argument('--Ds_label', type=int, default=57,help='The State Dimention')
 parser.add_argument('--Dr', type=int, default=1,help='The Relationship Dimension')
-parser.add_argument('--De_o', type=int, default=10,help='The Effect Dimension on node')
+parser.add_argument('--De_o', type=int, default=1,help='The Effect Dimension on node')
 parser.add_argument('--checkpoint_dir', dest='checkpoint_dir', default='./checkpoint',help='models are saved here')
+parser.add_argument('--type', dest='type', default='test',help='train/test')
 args = parser.parse_args()
 
 def main(_):
@@ -28,8 +29,11 @@ def main(_):
     tf.reset_default_graph() 
     with tf.Session() as sess:
         model = graph2graph(sess, Ds=args.Ds, Ds_label=args.Ds_label,Dr=args.Dr,De_o=args.De_o,
-                        checkpoint_dir=args.checkpoint_dir,epoch=args.epoch)
-        model.train(args)
+                        checkpoint_dir=args.checkpoint_dir,epoch=args.epoch,type_=args.type)
+        if args.type=='train':
+            model.train(args)
+        if args.type=='test':
+            model.test(args)
 
 if __name__ == '__main__':
       tf.app.run()
