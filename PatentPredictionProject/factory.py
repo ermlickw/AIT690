@@ -223,12 +223,12 @@ def preprocess_dataframe(df, numbtrainrows):
     # df_feature_vector = selector.fit_transform(df_feature_vector,response_vector)
 
     #SVD instead -latent semantic analysis
-    SVDtrunc = TruncatedSVD(n_components=100)
-    df_feature_vector = SVDtrunc.fit_transform(df_feature_vector)
+    # SVDtrunc = TruncatedSVD(n_components=100)
+    # df_feature_vector = SVDtrunc.fit_transform(df_feature_vector)
 
     #PCA on feature_matrix
-    # pca = PCA(n_components=100)
-    # df_feature_vector = pca.fit_transform(df_feature_vector)
+    pca = PCA(n_components=100)
+    df_feature_vector = pca.fit_transform(df_feature_vector)
 
     #NZV on feature matrix
     # df_feature_vector = SelectKBest(chi2, k=int(0.05*df_feature_vector.shape[1])).fit_transform(df_feature_vector, response_vector)
@@ -353,7 +353,7 @@ def main():
             #
             # 'Bayes': [MultinomialNB(), {'alpha': np.arange(0.0001, 0.2, 0.0001)}], #
             #
-            'SGD': [SGDClassifier(n_iter=8, penalty='elasticnet'), {}], #'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)
+            'SGD': [SGDClassifier(n_iter=8, penalty='elasticnet'), {'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)}], #'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)
             #
             'Passive Aggressive': [PassiveAggressiveClassifier(loss='hinge'), {}],
             #
