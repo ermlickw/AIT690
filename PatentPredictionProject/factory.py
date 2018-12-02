@@ -46,6 +46,8 @@ from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import learning_curve
 from sklearn.metrics import confusion_matrix
+from numpy import loadtxt
+from xgboost import XGBClassifier
 import itertools
 import numpy as np
 # import dill as pickle
@@ -221,12 +223,12 @@ def preprocess_dataframe(df, numbtrainrows):
     # df_feature_vector = selector.fit_transform(df_feature_vector,response_vector)
 
     #SVD instead -latent semantic analysis
-    # SVDtrunc = TruncatedSVD(n_components=100)
-    # df_feature_vector = SVDtrunc.fit_transform(df_feature_vector)
+    SVDtrunc = TruncatedSVD(n_components=100)
+    df_feature_vector = SVDtrunc.fit_transform(df_feature_vector)
 
     #PCA on feature_matrix
-    pca = PCA(n_components=100)
-    df_feature_vector = pca.fit_transform(df_feature_vector)
+    # pca = PCA(n_components=100)
+    # df_feature_vector = pca.fit_transform(df_feature_vector)
 
     #NZV on feature matrix
     # df_feature_vector = SelectKBest(chi2, k=int(0.05*df_feature_vector.shape[1])).fit_transform(df_feature_vector, response_vector)
@@ -346,6 +348,8 @@ def main():
             'LogisticRegression': [LogisticRegression(solver='lbfgs', multi_class='multinomial'), {}],
 
             'LDA': [LinearDiscriminantAnalysis(solver='svd'), {}],
+
+            # 'Boost': [XGBClassifier(),{}],
             #
             # 'Bayes': [MultinomialNB(), {'alpha': np.arange(0.0001, 0.2, 0.0001)}], #
             #
