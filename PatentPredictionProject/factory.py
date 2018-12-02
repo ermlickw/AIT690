@@ -29,6 +29,8 @@ from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 import pickle
 
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.dummy import DummyClassifier
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import model_selection, preprocessing, linear_model, naive_bayes, metrics, svm
@@ -327,7 +329,7 @@ def main():
 
 
     #preprocess data and create feature vectors OR load created data:
-    load_data = False
+    load_data = True
     load_models = False
 
     if load_data==False or not(os.path.isfile('train.npy') or os.path.isfile('train_label.npy') or os.path.isfile('test.npy') or os.path.isfile('test_label.npy')):
@@ -344,13 +346,11 @@ def main():
 
 
     classifiers = {
-
+            'Baseline': [DummyClassifier(strategy="stratified"), {}],
             'LogisticRegression': [LogisticRegression(solver='lbfgs', multi_class='multinomial'), {}],
-
+            'KNN': [KNeighborsClassifier(),{ 'n_neighbors': np.arange(1,4,10)}],
             'LDA': [LinearDiscriminantAnalysis(solver='svd'), {}],
 
-            # 'Boost': [XGBClassifier(),{}],
-            #
             # 'Bayes': [MultinomialNB(), {'alpha': np.arange(0.0001, 0.2, 0.0001)}], #
             #
             'SGD': [SGDClassifier(n_iter=8, penalty='elasticnet'), {'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)}], #'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)
