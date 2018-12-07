@@ -56,8 +56,7 @@ To run the baseline models in experiment 2, use the command:
               
     combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:6]).strip()) #change class to Main group for ExP2
     labels = list(set(testdf['mainclass'].apply(lambda x: (x[:6]).strip())))  #change class to Main group for Exp2
-    
-3) Run as stated above
+<br>3) Run as stated above
 ## Dataset
 The parsed data is available for download via: https://drive.google.com/drive/folders/1gOBlngdaolH7OUROw3pgA02R1vEtHzM5?usp=sharing
 
