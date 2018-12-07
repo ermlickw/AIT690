@@ -36,24 +36,26 @@ Then use the command:
 
 It implements the P-GNN model on a subset of the dataset, outperforming previous methods conducted by others in the patent classification field. Improvements in the current P-GNN model to handle larger datasets shows promising results for future classification tasks. 
 
-#### If you have not run experiment 1:<br>
+#### If you have not run Experiment 1:<br>
 
-To use the P-GNN model in experiment 2, use the command:
+To use the P-GNN model in Experiment 2, use the command:
        
        python GNN.py 
        
-To run the baseline models in experiment 2, use the command:
+To run the baseline models in Experiment 2, use the command:
        
        python factory.py 
 
-#### If you have run experiment 1: <br>
+#### If you have run Experiment 1: <br>
 1) Change lines 395 and 396 to "False" <br>
 2) Change line 397 to 2 <br>
-To use the P-GNN model in experiment 2, use the command:
+
+<br>
+To use the P-GNN model in Experiment 2, use the command:
        
        python GNN.py 
        
-To run the baseline models in experiment 2, use the command:
+To run the baseline models in Experiment 2, use the command:
        
        python factory.py        
 <br><br><br>
