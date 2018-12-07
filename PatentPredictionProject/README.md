@@ -7,7 +7,7 @@
 This project proposes a novel patent graphical neural network (P-GNN) approach for the task of automated patent classification. Two experiments are performed on the benchmarked WIPO-alpha dataset. Experiment 1 utilizes the entire data set to make predictions at the Subclass level. Experiment 2 utilizes Section D of the dataset to make predictions at the maingroup level.
 
 <br><br>
-**It is recommended that you run Experiment 2 first. Experiment 1 requires you to download the parsed dataset from the Googledrive link below and takes several hours to run.**
+#### **It is recommended that you run Experiment 2 first. Experiment 1 requires you to download the parsed dataset from the Google Drive link below and takes several hours to run.**
 <br> <br> <br><br>
 ## Data Extraction:
 
