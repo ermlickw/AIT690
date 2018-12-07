@@ -3,10 +3,11 @@
 ### Xiaojie Guo
 ### Nidhi Mehrotra
 
-This project propose a novel patent graphical neural network (P-GNN) approach for the task of automated patent classification. Two experiments are performed on the benchmarked WIPO-alpha dataset. 
+## 
+This project proposes a novel patent graphical neural network (P-GNN) approach for the task of automated patent classification. Two experiments are performed on the benchmarked WIPO-alpha dataset. 
 
 
-## Data processing:
+## Data Processing:
 
 The file factory.py is used to process the raw dataset and embed the patent documents into feature vectors. The output of this file is train-D.npy, test-D.npy, train_label-D.npy and test_label-D.npy, as well as the saved classifiers and confusion matrix plots. 
 
