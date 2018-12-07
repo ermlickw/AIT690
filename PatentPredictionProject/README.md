@@ -52,7 +52,9 @@ To run the baseline models in Experiment 2, use the command:
 2) Change line 397 to 2 <br>
 3) Run  "python factory.py" and then "python GNN.py"
 <br><br><br>
-## Dataset
+## Dataset / GitHub
 The parsed data is available for download via: https://drive.google.com/drive/folders/1gOBlngdaolH7OUROw3pgA02R1vEtHzM5?usp=sharing
 
 The offical dataset is available via: https://www.wipo.int/classifications/ipc/en/ITsupport/Categorization/dataset/wipo-alpha-readme.html
+
+Github site: https://github.com/ermlickw/AIT690.git 
