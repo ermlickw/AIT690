@@ -17,9 +17,10 @@ $ python GNN.py
 
 
 **It is recommended that you run Experiment 2 first.**
-**See the readme for information on how to run Experiment 1**
+**See the Readme for information on how to run Experiment 1**
 
-The script will output the training and testing feature vectors, the saved classifiers and the plotted confusion matricies
+The script will output the training and testing feature vectors, the saved classifiers and the plotted confusion matricies.
+It will also output performance metrics for each model via text output.
 
 The dataset can be obtained directly from: https://drive.google.com/drive/folders/1gOBlngdaolH7OUROw3pgA02R1vEtHzM5?usp=sharing
 or via the online website: https://www.wipo.int/classifications/ipc/en/ITsupport/Categorization/dataset/wipo-alpha-readme.html
