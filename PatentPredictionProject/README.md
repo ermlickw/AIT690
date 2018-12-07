@@ -4,8 +4,11 @@
 ### Nidhi Mehrotra
 
 ## 
-This project proposes a novel patent graphical neural network (P-GNN) approach for the task of automated patent classification. Two experiments are performed on the benchmarked WIPO-alpha dataset. 
+This project proposes a novel patent graphical neural network (P-GNN) approach for the task of automated patent classification. Two experiments are performed on the benchmarked WIPO-alpha dataset. Experiment 1 utilizes the entire data set to make predictions at the Subclass level. Experiment 2 utilizes Section D of the dataset to make predictions at the maingroup level.
 
+## Data Extraction:
+
+The file parser.py dictates how the training and text set data were extracted from the given XML files and into a CSV format. Downloads of the CSV files are given below as they are too large to store in GitHUB.
 
 ## Data Processing:
 
@@ -40,4 +43,7 @@ To run the baseline models in experiment 2, use the command:
        
        python factory.py 
 
+## Dataset
+The parsed data is available for download via: https://drive.google.com/drive/folders/1gOBlngdaolH7OUROw3pgA02R1vEtHzM5?usp=sharing
 
+The offical dataset is available via: https://www.wipo.int/classifications/ipc/en/ITsupport/Categorization/dataset/wipo-alpha-readme.html
