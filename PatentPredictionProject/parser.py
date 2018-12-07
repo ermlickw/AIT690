@@ -1,16 +1,22 @@
+'''
+This script was used to parse the data from the downloaded xml content into CSV files
+for the training and testing data.
+'''
+
 import sys
 import os
 import dataset
 from bs4 import BeautifulSoup
 from datafreeze import freeze
-db = dataset.connect()  # SQL database URL can be stored here <------
+
+db = dataset.connect()  # create table
 table = db['PATENT_DATA']
 properties = dict()
 
 i=0
 j=0
-root = os.path.realpath("PatentData") +"\Test"
-for path, subdirs,files in os.walk(root):
+root = os.path.realpath("PatentData") +"\Test" #find directory where data is stored
+for path, subdirs,files in os.walk(root): #walk it
     for name in files:
         j=j+1
         filename = os.path.join(path,name)
@@ -36,6 +42,8 @@ for path, subdirs,files in os.walk(root):
             properties['abstract'] = '"'+ soup.find('ab').get_text().replace('\n',"").replace('"',"").replace("'","") +'"'
             properties['claims'] = '"'+ soup.find('cl').get_text().replace('\n',"").replace('"',"").replace("'","")+'"'
             properties['description'] = '"'+ soup.find('txt').get_text().replace('\n',"").replace('"',"").replace("'","")+'"'
+
+            #find records in xml and store to table form and then insert into table
             # print(properties)
             # print(table)
             table.insert(properties)
@@ -45,4 +53,4 @@ print(i)
 print(j)
 
 
-freeze(table, format='csv', filename='WIPO-alpha-test.csv')
+freeze(table, format='csv', filename='WIPO-alpha-test.csv') #save table as csv
