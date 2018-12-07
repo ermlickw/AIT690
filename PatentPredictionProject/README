@@ -16,9 +16,7 @@ Experiment 2 implements the P-GNN model on a subset of the dataset, outperformin
 
 To use the P-GNN model in experiment 1,use the command:
        
-       python GNN.py --type test
+       python GNN.py 
        
-To train the P-GNN, use the command:
-    
-       python GNN.py --type train 
+
 
