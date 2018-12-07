@@ -8,10 +8,22 @@ This is a python project which predicts the IPC classficiation of patents.
 The script can be run by entering:
 $python factory.py
 
-This is used for both Experiment 1 and Experiment 2 by adjusting lines 303, 304, and 308 accordingly
-It is currently setup for running Experiment 2, the small scale setup on Section D of the wipo-alpha dataset
+To run the models in experiment 1,
+1)Comment lines 315 and 316
+2)Change line 320 to:
+    combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:4]).strip())
 
-feature vector creation and model training can be altered via lines 330 and 331
+Then use the command:
+
+     python factory.py
+
+
+To run the baseline models in experiment 2, use the command:
+
+       python factory.py
+
+
+The script will output the training and testing feature vectors, the saved classifiers and the plotted confusion matricies
 
 The dataset can be obtained directly from: https://drive.google.com/drive/folders/1gOBlngdaolH7OUROw3pgA02R1vEtHzM5?usp=sharing
 or via the online website: https://www.wipo.int/classifications/ipc/en/ITsupport/Categorization/dataset/wipo-alpha-readme.html
@@ -19,6 +31,7 @@ or via the online website: https://www.wipo.int/classifications/ipc/en/ITsupport
 
 ***************************************************************************************
 '''
+#import libraries
 import os
 import sys
 import time
@@ -125,12 +138,11 @@ def preprocess_dataframe(df, numbtrainrows):
     df['subclasses'] = df['subclasses'].apply(lambda x: x.split("--//--"))
     #convert to lowercase
     df.iloc[:,4:7] = df.iloc[:,4:7].apply(lambda x: x.str.lower() if(x.dtype == 'object') else x)
-    #keep only first 500 word of description
+    #keep only first 50 word of description
     df['description'] = df['description'].apply(lambda x: ' '.join(x.split()[:50]))
     df['title'] = df['title'].apply(lambda x: x.replace('"',""))
     df['description'] = df['description'].apply(lambda x: x.replace('"',""))
     df['claims'] = df['claims'].apply(lambda x: x.replace('"',""))
-    # print(df.iloc[1,:])
     df.dropna(how='any')
     response_vector = df['mainclass']
 
@@ -306,51 +318,42 @@ def main():
     Classifiers are either trained or loaded.
     Predicted results on the test set are provided.
 	'''
-    #open files
-    traindf = pd.read_csv("WIPO-alpha-train.csv") # for testing limit number of rows (46324 in total for taining)
-    testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
-
-    # simplify the dataset to section D
-    traindf = traindf[traindf['mainclass'].apply(lambda x: x[:1])=='D']
-    testdf = testdf[testdf['mainclass'].apply(lambda x: x[:1])=='D']
-
-    # combine and select the main group level
-    combineddf = traindf.append(testdf)
-    combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:6]).strip())
-    labels = list(set(testdf['mainclass'].apply(lambda x: (x[:6]).strip())))
-
-    #Document and class analysis:
-    # df1 = traindf['mainclass'].apply(lambda x: (x[:6]).strip())
-    # df2 = testdf['mainclass'].apply(lambda x: (x[:6]).strip())
-    # print(df1.nunique())
-    # print(df2.nunique())
-    # print(len(combineddf))
-    # print('number of unique mainclasses of test not in train')
-    # print(df2[~df2.isin(df1)].nunique())
-    # print('number of unique mainclasses of train not in test')
-    # print(df1[~df1.isin(df2)].nunique())
-    # print(df1[~df1.isin(df2)].nunique())
-
-    # show distribution of mainclasses
-    # sns.countplot(y=df['mainclass'].apply(lambda x: x[:4]))
-    # plt.show()
-
     #preprocess data and create feature vectors OR load created data:
     load_data = True
     load_models = True
 
     #build feature vectors if missing or specified by user above
     if load_data==False or not(os.path.isfile('train.npy') or os.path.isfile('train_label.npy') or os.path.isfile('test.npy') or os.path.isfile('test_label.npy')):
+        #open files
+        traindf = pd.read_csv("WIPO-alpha-train.csv") # for testing limit number of rows (46324 in total for taining)
+        testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
+
+        # simplify the dataset to section D
+        traindf = traindf[traindf['mainclass'].apply(lambda x: x[:1])=='D']
+        testdf = testdf[testdf['mainclass'].apply(lambda x: x[:1])=='D']
+
+        # combine and select the main group level
+        combineddf = traindf.append(testdf)
+        combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:6]).strip())
+        labels = list(set(testdf['mainclass'].apply(lambda x: (x[:6]).strip())))
+        # print(combineddf['mainclass'].head())
+        # show distribution of mainclasses
+        # sns.countplot(y=df['mainclass'].apply(lambda x: x[:4]))
+        # plt.show()
+
         train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
         then=time.time()
         print("Feature and Response vectors CREATED in ",round(then-now,2), "seconds")
-    else: #load the models
+    else: #load the feature vectors
         train_feature_vector = np.load('train-D.npy')
         train_response_vector = np.load('train_label-D.npy')
         test_feature_vector = np.load('test-D.npy')
         test_response_vector = np.load('test_label-D.npy')
         then=time.time()
+        labels = list(set(test_response_vector))
         print("Feature and Response Vectors LOADED in",round(then-now,2), "seconds")
+
+
 
     #set classifiers and hyperparameters to be searched
     classifiers = {
@@ -358,13 +361,9 @@ def main():
             'LogisticRegression': [LogisticRegression(solver='lbfgs', multi_class='multinomial'), {}],
             'KNN': [KNeighborsClassifier(),{ 'n_neighbors': np.arange(1,4,10)}],
             'LDA': [LinearDiscriminantAnalysis(solver='svd'), {}],
-
             # 'Bayes': [GaussianNB(), {}], #
-
-            'SGD': [SGDClassifier(n_iter=8, penalty='elasticnet'), {'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)}], #'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)
-
+            'SGD': [SGDClassifier(n_iter=8, penalty='elasticnet'), {'alpha':  10**-6*np.arange(1, 15, 2),'l1_ratio': np.arange(0.1, 0.3, 0.05)}],
             'Passive Aggressive': [PassiveAggressiveClassifier(loss='hinge'), {}],
-
             'Perceptron': [Perceptron(), {'alpha': np.arange(0.00001, 0.001, 0.00001)}], #
         }
 

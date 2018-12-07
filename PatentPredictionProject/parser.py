@@ -1,4 +1,8 @@
 '''
+AIT 690 | Patent Classificaiton Prediction Project | Due 11/28/2018
+Billy Ermlick
+Nidhi Mehrotra
+Xiaojie Guo
 This script was used to parse the data from the downloaded xml content into CSV files
 for the training and testing data.
 '''

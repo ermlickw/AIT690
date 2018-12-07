@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Oct 27 10:19:59 2018
-@author: gxjco
+AIT 690 | Patent Classificaiton Prediction Project | Due 11/28/2018
+Billy Ermlick
+Nidhi Mehrotra
+Xiaojie Guo
 This is the main function for training and tesing the P-GNN model.
 This code is modified based on the model "Interaction Network": https://github.com/jaesik817/Interaction-networks_tensorflow
 **********************
 To directly use the classifier, use the command:
-    python GNN.py 
+    python GNN.py
 """
 
 import argparse
@@ -26,7 +28,7 @@ args = parser.parse_args()
 def main(_):
     if not os.path.exists(args.checkpoint_dir):
         os.makedirs(args.checkpoint_dir)
-    tf.reset_default_graph() 
+    tf.reset_default_graph()
     with tf.Session() as sess:
         model = graph2graph(sess, Ds=args.Ds, Ds_label=args.Ds_label,Dr=args.Dr,De_o=args.De_o,
                         checkpoint_dir=args.checkpoint_dir,epoch=args.epoch)
