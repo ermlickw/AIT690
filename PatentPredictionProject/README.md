@@ -21,9 +21,9 @@ It utilizes a stacked TF-IDF feature matrix on the extracted title, abstract, cl
 
 To run the models in experiment 1,<br>
 1)Download WIPO-alpha-train.csv and WIPO-alpha-test.csv from link below or use parser.py on web provided dataset<br>
-1)Change lines 322 and 323 to "False" <br>
-2)Comment lines 332 and 333 <br>
-2)Change line 337 and 338 to: <br>
+2)Change lines 322 and 323 to "False" <br>
+3)Comment lines 332 and 333 <br>
+4)Change line 337 and 338 to: <br>
               
     combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:4]).strip()) #change class to Subclass for ExP1
     labels = list(set(testdf['mainclass'].apply(lambda x: (x[:4]).strip())))  #change class to Subclass for Exp1
