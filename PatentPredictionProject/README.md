@@ -1,7 +1,7 @@
 # AIT 690 | P-GNN based Patent Classification
-### Billy Ermlick
-### Xiaojie Guo
-### Nidhi Mehrotra
+### Billy Ermlick - team member, contributed to all parts, focused on parser, problem formulation, and factory
+### Xiaojie Guo - team member, contributed to all parts, focused on GNN, and documentation
+### Nidhi Mehrotra- team member, contributed to all parts, focused on factory and documentation
 
 ## 
 This project proposes a novel patent graphical neural network (P-GNN) approach for the task of automated patent classification. Two experiments are performed on the benchmarked WIPO-alpha dataset. Experiment 1 utilizes the entire data set to make predictions at the Subclass level. Experiment 2 utilizes Section D of the dataset to make predictions at the maingroup level.
