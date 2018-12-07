@@ -4,24 +4,20 @@ Billy Ermlick
 Nidhi Mehrotra
 Xiaojie Guo
 ************************************************************************************************************************************************
-This is a python project which predicts the IPC classficiation of patents.
+This project proposes a novel patent graphical neural network (P-GNN) approach
+for the task of automated patent classification. Two experiments are performed on
+the benchmarked WIPO-alpha dataset. Experiment 1 utilizes the entire data set to
+make predictions at the Subclass level. Experiment 2 utilizes Section D of the dataset
+to make predictions at the maingroup level.
+
+
 The script can be run by entering:
-$python factory.py
-
-To run the models in experiment 1,
-1)Comment lines 315 and 316
-2)Change line 320 to:
-    combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:4]).strip())
-
-Then use the command:
-
-     python factory.py
+$ python factory.py
+$ python GNN.py
 
 
-To run the baseline models in experiment 2, use the command:
-
-       python factory.py
-
+**It is recommended that you run Experiment 2 first.**
+**See the readme for information on how to run Experiment 1**
 
 The script will output the training and testing feature vectors, the saved classifiers and the plotted confusion matricies
 
@@ -310,41 +306,44 @@ def train_model(classifier, params,
     return acc,prec, recall, cr, cm, f1
 
 
-def main():
+def main(load_data,load_models,Experiment):
     '''
     This is the main function.
-    Data is read in from the directory and subsampled based on the Experimentself.
-    Feature vectors are either created or loadedselfself.
+    Data is read in from the directory and subsampled based on the Experiment.
+    Feature vectors are either created or loaded.
     Classifiers are either trained or loaded.
     Predicted results on the test set are provided.
 	'''
-    #preprocess data and create feature vectors OR load created data:
-    load_data = True
-    load_models = True
-
     #build feature vectors if missing or specified by user above
     if load_data==False or not(os.path.isfile('train.npy') or os.path.isfile('train_label.npy') or os.path.isfile('test.npy') or os.path.isfile('test_label.npy')):
         #open files
         traindf = pd.read_csv("WIPO-alpha-train.csv") # for testing limit number of rows (46324 in total for taining)
         testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
 
-        # simplify the dataset to section D
-        traindf = traindf[traindf['mainclass'].apply(lambda x: x[:1])=='D']
-        testdf = testdf[testdf['mainclass'].apply(lambda x: x[:1])=='D']
+        #determine if experiment 1 or 2:
+        if Experiment == 2: # if experiment 2 and data not loaded
 
-        # combine and select the main group level
-        combineddf = traindf.append(testdf)
-        combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:6]).strip())
-        labels = list(set(testdf['mainclass'].apply(lambda x: (x[:6]).strip())))
-        # print(combineddf['mainclass'].head())
-        # show distribution of mainclasses
-        # sns.countplot(y=df['mainclass'].apply(lambda x: x[:4]))
-        # plt.show()
+            # simplify the dataset to section D
+            traindf = traindf[traindf['mainclass'].apply(lambda x: x[:1])=='D']
+            testdf = testdf[testdf['mainclass'].apply(lambda x: x[:1])=='D']
+
+            # combine and select the main group level
+            combineddf = traindf.append(testdf)
+            combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:6]).strip())
+            labels = list(set(testdf['mainclass'].apply(lambda x: (x[:6]).strip())))
+
+        else: # if experiemnt 1 and data not loaded
+            # combine and select the main group level
+            combineddf = traindf.append(testdf)
+            combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:4]).strip())
+            labels = list(set(testdf['mainclass'].apply(lambda x: (x[:4]).strip())))
 
         train_feature_vector, train_response_vector, test_feature_vector, test_response_vector = preprocess_dataframe(combineddf,len(traindf))
         then=time.time()
         print("Feature and Response vectors CREATED in ",round(then-now,2), "seconds")
-    else: #load the feature vectors
+
+
+    else: #load the feature vectors if it is in memory already
         train_feature_vector = np.load('train-D.npy')
         train_response_vector = np.load('train_label-D.npy')
         test_feature_vector = np.load('test-D.npy')
@@ -388,8 +387,13 @@ def main():
 
 if __name__ == '__main__':
     now=time.time()
+    #preprocess data and create feature vectors OR load created data and Choose Experiment:
+    load_data = True
+    load_models = True
+    Experiment = 2
 
-    main()
+
+    main(load_data, load_models, Experiment)
 
     then=time.time()
     print("script finished in ",round(then-now,2)/60, "minutes")
