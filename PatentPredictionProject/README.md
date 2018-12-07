@@ -32,6 +32,7 @@ Then use the command:
 
      python factory.py
 
+![Experiment 1 Results](Experiment1Results.png)
 
 ## Experiment 2
 
@@ -61,7 +62,9 @@ script finished in  2.7475 minutes<br>
 #### If you have run Experiment 1: <br>
 1) Change lines 392 and 393 to "False" <br>
 2) Change line 394 to 2 <br>
-3) Run  "python factory.py" and then "python GNN.py"
+3) Run  "python factory.py" and then "python GNN.py"<br>
+
+![Experiment 2 Results](Experiment2Results.png)
 <br><br><br>
 ## Dataset / GitHub
 The parsed data is available for download via: https://drive.google.com/drive/folders/1gOBlngdaolH7OUROw3pgA02R1vEtHzM5?usp=sharing
@@ -69,3 +72,6 @@ The parsed data is available for download via: https://drive.google.com/drive/fo
 The offical dataset is available via: https://www.wipo.int/classifications/ipc/en/ITsupport/Categorization/dataset/wipo-alpha-readme.html
 
 Github site: https://github.com/ermlickw/AIT690.git
+
+
+
