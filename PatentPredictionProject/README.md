@@ -46,6 +46,17 @@ To use the P-GNN model in Experiment 2, use the command:
 To run the baseline models in Experiment 2, use the command:
        
        python factory.py 
+       
+Expected output: 
+> FINAL RESULTS | MACRO-F1  | MACRO-PRECISION | MACRO-RECALL | ACC <br>
+LDA [0.39, 0.43, 0.4, 0.56]<br>
+LogisticRegression [0.34, 0.41, 0.36, 0.5]<br>
+Passive Aggressive [0.34, 0.37, 0.35, 0.51]<br>
+SGD [0.31, 0.38, 0.33, 0.47]<br>
+KNN [0.3, 0.32, 0.31, 0.46]<br>
+Perceptron [0.28, 0.32, 0.34, 0.43]<br>
+Baseline [0.02, 0.03, 0.03, 0.04]<br>
+script finished in  2.7475 minutes<br>
 
 #### If you have run Experiment 1: <br>
 1) Change lines 395 and 396 to "False" <br>
