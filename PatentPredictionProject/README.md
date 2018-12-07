@@ -51,13 +51,7 @@ To run the baseline models in Experiment 2, use the command:
 2) Change line 397 to 2 <br>
 
 <br>
-To use the P-GNN model in Experiment 2, use the command:
-       
-       python GNN.py 
-       
-To run the baseline models in Experiment 2, use the command:
-       
-       python factory.py        
+Run  "python factory.py" and then "python GNN.py"
 <br><br><br>
 ## Dataset
 The parsed data is available for download via: https://drive.google.com/drive/folders/1gOBlngdaolH7OUROw3pgA02R1vEtHzM5?usp=sharing
