@@ -17,8 +17,8 @@ The file factory.py is used to process the raw dataset and embed the patent docu
 It utilizes a stacked TF-IDF feature matrix on the extracted title, abstract, claims, and description. Grid search tuning is performed to achieve results comparable to others in the field. 
 
 To run the models in experiment 1,<br>
-Comment lines 315 and 316 <br>
-change line 320 to
+1)Comment lines 315 and 316 <br>
+2)Change line 320 to:
               
     combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:4]).strip())
        
