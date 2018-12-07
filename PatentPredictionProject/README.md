@@ -40,4 +40,7 @@ To run the baseline models in experiment 2, use the command:
        
        python factory.py 
 
+## Dataset
+The parsed data is available for download via: https://drive.google.com/drive/folders/1gOBlngdaolH7OUROw3pgA02R1vEtHzM5?usp=sharing
 
+The offical dataset is available via: https://www.wipo.int/classifications/ipc/en/ITsupport/Categorization/dataset/wipo-alpha-readme.html
