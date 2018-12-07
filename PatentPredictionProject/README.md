@@ -51,8 +51,8 @@ To run the baseline models in experiment 2, use the command:
        python factory.py 
 
 #### If you have run experiment 1: <br>
-3)Uncomment lines 332 and 333 <br>
-4)Change line 337 and 338 to: <br>
+1)Uncomment lines 332 and 333 <br>
+2)Change line 337 and 338 to: <br>
               
     combineddf['mainclass'] = combineddf['mainclass'].apply(lambda x: (x[:6]).strip()) #change class to Main group for ExP2
     labels = list(set(testdf['mainclass'].apply(lambda x: (x[:6]).strip())))  #change class to Main group for Exp2
