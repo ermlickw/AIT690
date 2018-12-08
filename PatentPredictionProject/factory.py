@@ -316,7 +316,7 @@ def main(load_data,load_models,Experiment):
     Predicted results on the test set are provided.
 	'''
     #build feature vectors if missing or specified by user above
-    if load_data==False or not(os.path.isfile('train.npy') or os.path.isfile('train_label.npy') or os.path.isfile('test.npy') or os.path.isfile('test_label.npy')):
+    if load_data==False or not(os.path.isfile('train-D.npy') or os.path.isfile('train_label-D.npy') or os.path.isfile('test-D.npy') or os.path.isfile('test_label-D.npy')):
         #open files
         traindf = pd.read_csv("WIPO-alpha-train.csv") # for testing limit number of rows (46324 in total for taining)
         testdf = pd.read_csv("WIPO-alpha-test.csv")  #29926 total
